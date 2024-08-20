@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import axios from 'axios';
 import './App.css';
 
 function App() {
   const [randomInput, setRandomInput] = useState('');
   const [responseMessage, setResponseMessage] = useState('');
+  const [fileToBeSent, setFileToBeSent] = useState(null);
+  const fileInputRef = useRef(null);
 
   const handleInputChange = (event) => {
     setRandomInput(event.target.value);
@@ -37,10 +40,43 @@ function App() {
       setResponseMessage('Error: Failed to add document');
     }
   };
+  const uploadFile = (event) => {
+    event.preventDefault();
+    const formData = new FormData();
+  
+    formData.append("file", fileToBeSent);
+  
+    axios.post("http://localhost:5000/upload", formData)
+        .then(res => console.log(res))
+        .catch(err => console.warn(err));
+  };
+
+  const handleFileChange = (event) => {
+    setFileToBeSent(event.target.files[0]);
+  };
+  const handleButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
 
   return (
     <div className="App">
-      <header className="App-header">
+      <header className='App-header'>
+      <form onSubmit = {uploadFile}>
+        <button type = "button" onClick = {handleButtonClick}> 
+          Choose File 
+        </button>
+        {fileToBeSent && <p>{fileToBeSent.name}</p>}
+        <input
+          type = "file"
+          ref = {fileInputRef}
+          onChange = {handleFileChange}
+          style = {{display:'none'}}
+        />
+        <button type = "submit">Upload File </button>
+      </form>
         <img src={require('./logo.svg').default} className="App-logo" alt="logo" />
         <form onSubmit={handleSubmit}>
           <label>

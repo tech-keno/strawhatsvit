@@ -3,6 +3,8 @@ from flask_cors import CORS  # Import CORS
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import os
+import pathlib
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app)  # try enable cors
@@ -69,6 +71,35 @@ def get_documents():
     documents = db.mycollection.find()
     result = [{item: doc[item] for item in doc if item != '_id'} for doc in documents]
     return jsonify(result)
+
+@app.route('/upload', methods = ['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+    filename = file.filename
+    filepath = os.path.join('uploads', filename)
+    file.save(filepath)
+    return jsonify({"message": "file Uploaded Successfully", "filename": filename})
+
+@app.route('/process', methods = ['GET'])
+def process_csv():
+    curr_dir = pathlib.Path(__file__).parent.resolve().as_posix()
+    uploads_dir = curr_dir + '/uploads'
+    pathlist = pathlib.Path(uploads_dir).rglob('*.csv')
+    path_in_str = ""
+
+    for path in pathlist:
+        path_in_str = str(path)
+        if ".csv" in path_in_str:
+            break
+    
+    df = pd.read_csv(path_in_str).to_string()
+
+    return jsonify({"file": df})
+
 
 if __name__ == '__main__':
     app.run(debug=True)
