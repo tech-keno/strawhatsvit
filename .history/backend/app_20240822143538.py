@@ -72,31 +72,25 @@ def get_documents():
     result = [{item: doc[item] for item in doc if item != '_id'} for doc in documents]
     return jsonify(result)
 
-@app.route('/upload', methods=['POST'])
+@app.route('/upload', methods = ['POST'])
 def upload_file():
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
-
     file = request.files['file']
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
-
     filename = file.filename
-    uploads_folder = r'uploads'
-
-    if not os.path.exists(uploads_folder):
+    uploads_folder =  r'\uploads' 
+    
+    if not os.path.exists():
         os.makedirs(uploads_folder)
 
-    filepath = os.path.join(uploads_folder, filename)
+    filepath = os.path.join('uploads', filename)
     file.save(filepath)
-
-    return jsonify({"message": "File uploaded successfully", "filename": filename}), 200
+    return jsonify({"message": "file Uploaded Successfully", "filename": filename})
 
 @app.route('/process', methods = ['GET'])
 def process_csv():
-    if not os.path.exists(r'uploads'):
-        return jsonify({"uploads_folder" : "empty"})
-    
     curr_dir = pathlib.Path(__file__).parent.resolve().as_posix()
     uploads_dir = curr_dir + '/uploads'
     pathlist = pathlib.Path(uploads_dir).rglob('*.csv')

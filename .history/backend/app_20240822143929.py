@@ -95,7 +95,7 @@ def upload_file():
 @app.route('/process', methods = ['GET'])
 def process_csv():
     if not os.path.exists(r'uploads'):
-        return jsonify({"uploads_folder" : "empty"})
+        return {{"empty" : "empty"}}
     
     curr_dir = pathlib.Path(__file__).parent.resolve().as_posix()
     uploads_dir = curr_dir + '/uploads'

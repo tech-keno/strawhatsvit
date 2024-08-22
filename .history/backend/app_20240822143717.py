@@ -82,7 +82,7 @@ def upload_file():
         return jsonify({"error": "No selected file"}), 400
 
     filename = file.filename
-    uploads_folder = r'uploads'
+    uploads_folder = r'uploads'  # Changed to a relative path
 
     if not os.path.exists(uploads_folder):
         os.makedirs(uploads_folder)
@@ -94,9 +94,6 @@ def upload_file():
 
 @app.route('/process', methods = ['GET'])
 def process_csv():
-    if not os.path.exists(r'uploads'):
-        return jsonify({"uploads_folder" : "empty"})
-    
     curr_dir = pathlib.Path(__file__).parent.resolve().as_posix()
     uploads_dir = curr_dir + '/uploads'
     pathlist = pathlib.Path(uploads_dir).rglob('*.csv')
