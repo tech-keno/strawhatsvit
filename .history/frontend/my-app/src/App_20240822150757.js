@@ -77,11 +77,7 @@ function App() {
         />
         <button type = "submit">Upload File </button>
       </form>
-      <img
-          src={require('./vit.png')}
-          className="App-logo"
-          alt="logo"
-        />
+      <img src={require('./vit.png').default} className="App-logo" alt="logo" />
       <form onSubmit={handleSubmit}>
           <label>
             <input type="text" value={randomInput} onChange={handleInputChange} />

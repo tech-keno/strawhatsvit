@@ -77,19 +77,22 @@ function App() {
         />
         <button type = "submit">Upload File </button>
       </form>
-      <img
-          src={require('./vit.png')}
-          className="App-logo"
-          alt="logo"
-        />
-      <form onSubmit={handleSubmit}>
+        <img src={require('./logo.svg').default} className="App-logo" alt="logo" />
+        <form onSubmit={handleSubmit}>
           <label>
             <input type="text" value={randomInput} onChange={handleInputChange} />
           </label>
           <button type="submit">Submit</button>
         </form>
         <p>{responseMessage}</p>
-
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React
+        </a>
       </header>
     </div>
   );

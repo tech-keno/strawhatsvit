@@ -81,6 +81,7 @@ function App() {
           src={require('./vit.png')}
           className="App-logo"
           alt="logo"
+          style={{ width: '100px', height: 'auto' }} // Adjust size here
         />
       <form onSubmit={handleSubmit}>
           <label>

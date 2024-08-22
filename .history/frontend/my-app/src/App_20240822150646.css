@@ -14,7 +14,7 @@
 }
 
 .App-header {
-  background-color: #fffdd0;
+  background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -38,5 +38,6 @@
 } */
 
 .App-logo {
-  width: 1000px;
+  width: 250px; /* Set the width to 100px */
+  color: orange;
 }
