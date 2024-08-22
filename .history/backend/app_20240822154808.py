@@ -141,3 +141,48 @@ def process_csv():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
+
+
+# # Login route
+# @app.route("/login", methods=["GET", "POST"])
+# def login():
+#     if request.method == "POST":
+#         username = request.form["username"]
+#         password = request.form["password"]
+
+#         # Find the user in MongoDB
+#         user = users_collection.find_one({"username": username})
+
+#         if user and checkpw(password.encode("utf-8"), user["password"]):
+#             session["username"] = username
+#             return redirect(url_for("dashboard"))
+#         else:
+#             return "Invalid username or password!"
+
+#     return render_template_string('''
+#     <form method="post">
+#         Username: <input type="text" name="username"><br>
+#         Password: <input type="password" name="password"><br>
+#         <input type="submit" value="Login">
+#     </form>
+#     ''')
+
+# # Dashboard route (protected)
+# @app.route("/dashboard")
+# def dashboard():
+#     if "username" in session:
+#         return f"Welcome, {session['username']}! <a href='/logout'>Logout</a>"
+#     return redirect(url_for("login"))
+
+# # Logout route
+# @app.route("/logout")
+# def logout():
+#     session.pop("username", None)
+#     return redirect(url_for("login"))
+
+# if __name__ == "__main__":
+#     app.run(debug=True)
+

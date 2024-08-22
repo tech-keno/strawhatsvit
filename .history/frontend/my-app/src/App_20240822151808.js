@@ -1,4 +1,8 @@
 import React, { useState, useRef } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import DragItem from './DragItem';
+import DropZone from './DropZone';
 import axios from 'axios';
 import './App.css';
 
@@ -62,37 +66,42 @@ function App() {
   };
 
 
-  return (
-    <div className="App">
-      <header className='App-header'>
-      <form onSubmit = {uploadFile}>
-        <button type = "button" onClick = {handleButtonClick}> 
-          Choose File 
-        </button>
-        {fileToBeSent && <p>{fileToBeSent.name}</p>}
-        <input
-          type = "file"
-          ref = {fileInputRef}
-          onChange = {handleFileChange}
-          style = {{display:'none'}}
-        />
-        <button type = "submit">Upload File </button>
-      </form>
-      <img
-          src={require('./vit.png')}
-          className="App-logo"
-          alt="logo"
-        />
-      <form onSubmit={handleSubmit}>
-          <label>
-            <input type="text" value={randomInput} onChange={handleInputChange} />
-          </label>
-          <button type="submit">Submit</button>
-        </form>
-        <p>{responseMessage}</p>
-
-      </header>
-    </div>
+return (
+    <DndProvider backend={HTML5Backend}>
+      <div className="App">
+        <header className='App-header'>
+          <form onSubmit={uploadFile}>
+            <button type="button" onClick={handleButtonClick}>
+              Choose File
+            </button>
+            {fileToBeSent && <p>{fileToBeSent.name}</p>}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              style={{ display: 'none' }}
+            />
+            <button type="submit">Upload File</button>
+          </form>
+          <img
+            src={require('./vit.png')}
+            className="App-logo"
+            alt="logo"
+          />
+          <form onSubmit={handleSubmit}>
+            <label>
+              <input type="text" value={randomInput} onChange={handleInputChange} />
+            </label>
+            <button type="submit">Submit</button>
+          </form>
+          <p>{responseMessage}</p>
+          <div className="drag-drop-container">
+            <DragItem name="Drag me!" />
+            <DropZone onDrop={item => console.log(`Dropped: ${item.name}`)} />
+          </div>
+        </header>
+      </div>
+    </DndProvider>
   );
 }
 

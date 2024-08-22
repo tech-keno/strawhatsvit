@@ -1,6 +1,5 @@
-from flask import Flask, request, render_template_string, redirect, url_for, session, jsonify
-from bcrypt import hashpw, gensalt, checkpw
-from flask_cors import CORS  
+from flask import Flask, jsonify, request
+from flask_cors import CORS  # Import CORS
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import os
@@ -8,43 +7,17 @@ import pathlib
 import pandas as pd
 
 app = Flask(__name__)
-CORS(app)  # enabling cors
+CORS(app)  # try enable cors
 
 # strawhats mongodb uri key in env
 app.config["MONGO_URI"] = os.getenv("MONGO_URI")
 
 client = MongoClient(app.config["MONGO_URI"])
 db = client.mydatabase
-users_collection = db["users"]
 
 @app.route('/')
 def home():
     return "Straw Hats Home Base"
-
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-
-        if users_collection.find_one({"username": username}):
-            return "Username already exists man!"
-
-        hashed_password = hashpw(password.encode("utf-8"), gensalt())
-
-        users_collection.insert_one({"username": username, "password": hashed_password})
-
-        # add a route for login
-        return redirect(url_for("login"))
-    
-    # for testing purposes frontend will be better
-    return render_template_string('''
-    <form method="post">
-        Username: <input type="text" name="username"><br>
-        Password: <input type="password" name="password"><br>
-        <input type="submit" value="Register">
-    </form>
-    ''')
 
 @app.route('/document/<id>', methods=['GET'])
 def get_document_by_id(id):

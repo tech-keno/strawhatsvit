@@ -1,4 +1,9 @@
 import React, { useState, useRef } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import DragItem from './DragItem';
+import DropZone from './DropZone';
+
 import axios from 'axios';
 import './App.css';
 

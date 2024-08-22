@@ -8,7 +8,7 @@ import pathlib
 import pandas as pd
 
 app = Flask(__name__)
-CORS(app)  # enabling cors
+CORS(app)  # try enable cors
 
 # strawhats mongodb uri key in env
 app.config["MONGO_URI"] = os.getenv("MONGO_URI")
@@ -20,31 +20,6 @@ users_collection = db["users"]
 @app.route('/')
 def home():
     return "Straw Hats Home Base"
-
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-
-        if users_collection.find_one({"username": username}):
-            return "Username already exists man!"
-
-        hashed_password = hashpw(password.encode("utf-8"), gensalt())
-
-        users_collection.insert_one({"username": username, "password": hashed_password})
-
-        # add a route for login
-        return redirect(url_for("login"))
-    
-    # for testing purposes frontend will be better
-    return render_template_string('''
-    <form method="post">
-        Username: <input type="text" name="username"><br>
-        Password: <input type="password" name="password"><br>
-        <input type="submit" value="Register">
-    </form>
-    ''')
 
 @app.route('/document/<id>', methods=['GET'])
 def get_document_by_id(id):
@@ -141,3 +116,48 @@ def process_csv():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
+
+
+# # Login route
+# @app.route("/login", methods=["GET", "POST"])
+# def login():
+#     if request.method == "POST":
+#         username = request.form["username"]
+#         password = request.form["password"]
+
+#         # Find the user in MongoDB
+#         user = users_collection.find_one({"username": username})
+
+#         if user and checkpw(password.encode("utf-8"), user["password"]):
+#             session["username"] = username
+#             return redirect(url_for("dashboard"))
+#         else:
+#             return "Invalid username or password!"
+
+#     return render_template_string('''
+#     <form method="post">
+#         Username: <input type="text" name="username"><br>
+#         Password: <input type="password" name="password"><br>
+#         <input type="submit" value="Login">
+#     </form>
+#     ''')
+
+# # Dashboard route (protected)
+# @app.route("/dashboard")
+# def dashboard():
+#     if "username" in session:
+#         return f"Welcome, {session['username']}! <a href='/logout'>Logout</a>"
+#     return redirect(url_for("login"))
+
+# # Logout route
+# @app.route("/logout")
+# def logout():
+#     session.pop("username", None)
+#     return redirect(url_for("login"))
+
+# if __name__ == "__main__":
+#     app.run(debug=True)
+
