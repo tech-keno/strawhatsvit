@@ -4,7 +4,7 @@ Making a time table
 
 Tutorial to run on your machine:
 
-1. cd into calendartest
+1. cd into frontend
 2. npm install
 3. npm start
 

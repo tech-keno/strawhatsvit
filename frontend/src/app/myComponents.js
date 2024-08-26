@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-function MyComponent() {
+export default function MyComponent() {
   return (
     <div>
       <h2>This is my custom component!</h2>
@@ -11,6 +11,3 @@ function MyComponent() {
     </div>
   );
 }
-
-
-export default MyComponent;

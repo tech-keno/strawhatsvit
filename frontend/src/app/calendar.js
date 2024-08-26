@@ -3,6 +3,7 @@
 import React, {useEffect, useState} from 'react';
 import {DayPilot, DayPilotCalendar, DayPilotNavigator} from "@daypilot/daypilot-lite-react";
 import "./Calendar.css";
+import data from './test.json'
 
 const styles = {
   wrap: {
@@ -112,40 +113,7 @@ const Calendar = () => {
   };
 
   useEffect(() => {
-    const events = [
-      {
-        id: 1,
-        text: "Event 1",
-        start: "2025-10-06T10:30:00",
-        end: "2025-10-06T13:00:00",
-        participants: 2,
-      },
-      {
-        id: 2,
-        text: "Event 2",
-        start: "2025-10-07T09:30:00",
-        end: "2025-10-07T11:30:00",
-        backColor: "#6aa84f",
-        participants: 1,
-      },
-      {
-        id: 3,
-        text: "Event 3",
-        start: "2025-10-07T12:00:00",
-        end: "2025-10-07T15:00:00",
-        backColor: "#f1c232",
-        participants: 3,
-      },
-      {
-        id: 4,
-        text: "Event 4",
-        start: "2025-10-05T11:30:00",
-        end: "2025-10-05T14:30:00",
-        backColor: "#cc4125",
-        participants: 4,
-      },
-    ];
-    setEvents(events);
+    setEvents(data.events);
   }, []);
 
   return (
