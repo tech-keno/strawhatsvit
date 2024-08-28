@@ -6,15 +6,13 @@ from bson.objectid import ObjectId
 import os
 import pathlib
 import pandas as pd
-from dotenv import load_dotenv
 
 app = Flask(__name__)
 CORS(app)  # enabling cors
 
-load_dotenv()
 # strawhats mongodb uri key in env
-app.config["MONGO_URI"] = os.getenv("MONGO_URI")
-
+# app.config["MONGO_URI"] = os.getenv("MONGO_URI")
+app.config["MONGO_URI"] = "mongodb+srv://strawhats:iEXibstNH2FplQf8@strawhatsdatabase.8ymeywa.mongodb.net/?retryWrites=true&w=majority&appName=StrawHatsDatabase"
 client = MongoClient(app.config["MONGO_URI"])
 db = client.mydatabase
 users_collection = db["users"]

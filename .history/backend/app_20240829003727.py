@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 app = Flask(__name__)
 CORS(app)  # enabling cors
 
-load_dotenv()
 # strawhats mongodb uri key in env
 app.config["MONGO_URI"] = os.getenv("MONGO_URI")
 

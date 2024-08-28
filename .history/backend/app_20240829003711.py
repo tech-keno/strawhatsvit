@@ -14,7 +14,6 @@ CORS(app)  # enabling cors
 load_dotenv()
 # strawhats mongodb uri key in env
 app.config["MONGO_URI"] = os.getenv("MONGO_URI")
-
 client = MongoClient(app.config["MONGO_URI"])
 db = client.mydatabase
 users_collection = db["users"]
