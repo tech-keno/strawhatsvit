@@ -3,6 +3,8 @@
 import React, {useEffect, useState} from "react";
 import {DayPilot, DayPilotCalendar} from "@daypilot/daypilot-lite-react";
 
+import data from "./events.json";
+
 export default function Calendar() {
 
     const styles = {
@@ -94,35 +96,7 @@ export default function Calendar() {
         if (!calendar || calendar?.disposed()) {
             return;
         }
-        const events: DayPilot.EventData[] = [
-            {
-                id: 1,
-                text: "Event 1",
-                start: "2024-10-02T10:30:00",
-                end: "2024-10-02T13:00:00",
-            },
-            {
-                id: 2,
-                text: "Event 2",
-                start: "2024-10-03T09:30:00",
-                end: "2024-10-03T11:30:00",
-                backColor: "#6aa84f",
-            },
-            {
-                id: 3,
-                text: "Event 3",
-                start: "2024-10-03T12:00:00",
-                end: "2024-10-03T15:00:00",
-                backColor: "#f1c232",
-            },
-            {
-                id: 4,
-                text: "Event 4",
-                start: "2024-10-01T11:30:00",
-                end: "2024-10-01T14:30:00",
-                backColor: "#cc4125",
-            },
-        ];
+        const events: DayPilot.EventData[] = data;
 
         const startDate = "2024-10-01";
 
