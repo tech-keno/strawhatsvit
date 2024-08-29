@@ -29,12 +29,6 @@ export default function Calendar() {
         {name: "Purple", id: "#af8ee5"},
     ];
 
-    const participants = [
-        {name: "1", id: 1},
-        {name: "2", id: 2},
-        {name: "3", id: 3},
-        {name: "4", id: 4},
-    ];
 
     const [calendar, setCalendar] = useState<DayPilot.Calendar>();
 
@@ -42,14 +36,12 @@ export default function Calendar() {
         const form = [
             {name: "Event text", id: "text", type: "text"},
             {name: "Event color", id: "backColor", type: "select", options: colors},
-            {name: "Number of participants", id: "tags.participants", type: "select", options: participants},
         ];
 
         const modal = await DayPilot.Modal.form(form, e.data);
         if (modal.canceled) { return; }
         e.data.text = modal.result.text;
         e.data.backColor = modal.result.backColor;
-        e.data.tags.participants = modal.result.tags.participants;
         calendar?.events.update(e);
     };
 
@@ -88,22 +80,6 @@ export default function Calendar() {
                 action: "ContextMenu",
             },
         ];
-
-
-        const participants = args.data.tags?.participants || 0;
-        if (participants > 0) {
-            args.data.areas.push({
-                bottom: 5,
-                left: 5,
-                width: 24,
-                height: 24,
-                action: "None",
-                backColor: "#00000033",
-                fontColor: "#fff",
-                text: participants,
-                style: "border-radius: 50%; border: 2px solid #fff; font-size: 18px; text-align: center;",
-            });
-        }
     };
 
     const initialConfig: DayPilot.CalendarConfig = {
@@ -124,9 +100,6 @@ export default function Calendar() {
                 text: "Event 1",
                 start: "2024-10-02T10:30:00",
                 end: "2024-10-02T13:00:00",
-                tags: {
-                    participants: 2,
-                }
             },
             {
                 id: 2,
@@ -134,9 +107,6 @@ export default function Calendar() {
                 start: "2024-10-03T09:30:00",
                 end: "2024-10-03T11:30:00",
                 backColor: "#6aa84f",
-                tags: {
-                    participants: 1,
-                }
             },
             {
                 id: 3,
@@ -144,9 +114,6 @@ export default function Calendar() {
                 start: "2024-10-03T12:00:00",
                 end: "2024-10-03T15:00:00",
                 backColor: "#f1c232",
-                tags: {
-                    participants: 3,
-                }
             },
             {
                 id: 4,
@@ -154,9 +121,6 @@ export default function Calendar() {
                 start: "2024-10-01T11:30:00",
                 end: "2024-10-01T14:30:00",
                 backColor: "#cc4125",
-                tags: {
-                    participants: 2,
-                }
             },
         ];
 
