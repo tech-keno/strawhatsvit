@@ -1,4 +1,6 @@
-backend\.env
-backend\.history
-backend\test.py
-backend\uploads
+/.history/
+/uploads/
+/__pycache__/
+
+test.py
+.env
