@@ -2,9 +2,9 @@ name: StrawHats
 
 on:
   push:
-    branches: [flask-mongo]
+    branches: [main]
   pull_request:
-    branches: [flask-mongo]
+    branches: [main]
 
 jobs:
   build:
