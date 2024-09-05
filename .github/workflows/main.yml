@@ -36,4 +36,4 @@ jobs:
       env:
         FLASK_ENV: testing
       run: |
-        python -m unittest discover -s tests -p "testing_app.py"
+        python -m unittest discover -p "testing_app.py"
