@@ -31,4 +31,4 @@ jobs:
 
     - name: Run tests
       run: |
-        python3 testing_app.py
+        python3 backend/testing_app.py
