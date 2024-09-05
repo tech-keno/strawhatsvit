@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@daypilot/daypilot-lite-react": "^3.25.0",
+    "axios": "^1.7.7",
     "next": "14.2.6",
     "react": "^18",
     "react-dom": "^18"

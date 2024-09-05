@@ -1,9 +1,11 @@
+'use client'
+
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
-import './App.css';
+import './login.css';
 
 
-function App() {
+export default function Login() {
   const [randomInput, setRandomInput] = useState('');
   const [responseMessage, setResponseMessage] = useState('');
   const [fileToBeSent, setFileToBeSent] = useState(null);
@@ -95,5 +97,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
