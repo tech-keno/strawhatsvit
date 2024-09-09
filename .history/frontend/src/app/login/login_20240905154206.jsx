@@ -18,27 +18,28 @@ export default function Login() {
       setPassword(value);
     }
   };
+
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
-  
+
     try {
-      const response = await axios.post('http://127.0.0.1:5000/login', {
+      const response = await axios.post('http://localhost:5000/login', {
         username,
         password,
-      }, { withCredentials: true }) 
+      });
+
       if (response.status === 200) {
         setResponseMessage('Login successful');
-        window.location.href = '/view/calendar'; 
+        window.location.href = '/view/calendar';
+
+      } else {
+
+        setResponseMessage('Login failed');
       }
     } catch (error) {
-      if (error.response && error.response.data.error) {
-        setResponseMessage(`Error: ${error.response.data.error}`);
-      } else {
-        setResponseMessage('Error: Login failed');
-      }
+      setResponseMessage('Error: Login failed');
     }
   };
-  
 
   return (
     <div className="App">

@@ -12,13 +12,14 @@ from dotenv import load_dotenv
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SECRET_KEY'] = 'RT'
+app.config['SECRET_KEY'] = 'RT'\
 
 load_dotenv()
 app.config["MONGO_URI"] = os.getenv("MONGO_URI")
 
 
-Session(app)
+# Initialize Flask-Session
+session_ext = Session(app)
 
 client = MongoClient(app.config["MONGO_URI"])
 db = client.mydatabase
@@ -31,7 +32,7 @@ def home():
 
 def check_auth():
     print(session)
-    if 'username' in session:
+    if 'user_id' in session:
         return jsonify({'authenticated': True, 'username': session['username']}), 200
     else:
         return jsonify({'authenticated': False}), 401
@@ -40,13 +41,19 @@ def check_auth():
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        data = request.json
-        username = data.get("username")
-        password = data.get("password")
+        username = request.form["username"]
+        password = request.form["password"]
 
         user = users_collection.find_one({"username": username})
+
         if user and checkpw(password.encode("utf-8"), user["password"]):
             session["username"] = str(user["_id"])
+            session.modified = True
+            print(f"Session data after login: {session}")
+            session_file = os.path.join(app.config["SESSION_FILE_DIR"], f'session_{session.sid}')
+            print(f"Session file path: {session_file}")
+            if os.path.exists(session_file):
+                print(f"Session file content: {open(session_file).read()}")
             return redirect(url_for("check_auth"))
         else:
             return "Invalid username or password!"

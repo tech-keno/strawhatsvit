@@ -1,36 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from "react";
-import { DayPilot, DayPilotCalendar } from "@daypilot/daypilot-lite-react";
-import axios from "axios";
-import { useRouter } from 'next/navigation'; // for redirecting
+import React, {useEffect, useState} from "react";
+import {DayPilot, DayPilotCalendar} from "@daypilot/daypilot-lite-react";
+
 import data from "./events.json";
 
 export default function Calendar() {
-
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const router = useRouter();
-
-    useEffect(() => {
-        // Check if the user is authenticated
-        const checkAuthentication = async () => {
-            try {
-                const response = await axios.get('http://127.0.0.1:5000/check-auth', { withCredentials: true });
-                console.log("Response:", response.data); // Debugging response
-                if (response.status === 200 && response.data.authenticated) {
-                    setIsAuthenticated(true);
-                } else {
-                    throw new Error("User is not authenticated");
-                }
-            } catch (error) {
-                console.error("Authentication error:", error); // Log any errors
-                router.push('/login'); // Redirect to login if not authenticated
-            }
-        };
-    
-        checkAuthentication();
-    }, [router]);
-    
 
     const styles = {
         wrap: {
@@ -55,6 +30,7 @@ export default function Calendar() {
         {name: "Light Red", id: "#ff0000"},
         {name: "Purple", id: "#af8ee5"},
     ];
+
 
     const [calendar, setCalendar] = useState<DayPilot.Calendar>();
 
@@ -116,6 +92,7 @@ export default function Calendar() {
     const [config, setConfig] = useState(initialConfig);
 
     useEffect(() => {
+
         if (!calendar || calendar?.disposed()) {
             return;
         }
@@ -132,6 +109,7 @@ export default function Calendar() {
         if (modal.canceled) {
             return;
         }
+        // console.log("modal.result", modal.result, calendar);
         calendar?.events.add({
             start: args.start,
             end: args.end,
@@ -142,10 +120,6 @@ export default function Calendar() {
             }
         });
     };
-
-    if (!isAuthenticated) {
-        return <p>Checking authentication...</p>; // You can show a loader here
-    }
 
     return (
         <div>
@@ -158,5 +132,5 @@ export default function Calendar() {
                 controlRef={setCalendar}
             />
         </div>
-    );
+    )
 }

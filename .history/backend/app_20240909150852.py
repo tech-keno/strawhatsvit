@@ -1,7 +1,6 @@
 from flask import Flask, request, render_template_string, redirect, url_for, session, jsonify
-from flask_session import Session  # Import Flask-Session
 from bcrypt import hashpw, gensalt, checkpw
-from flask_cors import CORS
+from flask_cors import CORS  
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import os
@@ -11,14 +10,11 @@ from dotenv import load_dotenv
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SECRET_KEY'] = 'RT'
 
 load_dotenv()
+# strawhats mongodb uri key in env
 app.config["MONGO_URI"] = os.getenv("MONGO_URI")
-
-
-Session(app)
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "NP")
 
 client = MongoClient(app.config["MONGO_URI"])
 db = client.mydatabase
@@ -27,41 +23,24 @@ users_collection = db["users"]
 @app.route('/')
 def home():
     return "Straw Hats Home Base"
-@app.route('/check-auth', methods=['GET'])
 
+@app.route('/check-auth', methods=['GET'])
 def check_auth():
     print(session)
-    if 'username' in session:
-        return jsonify({'authenticated': True, 'username': session['username']}), 200
+    if 'user_id' in session:
+        return jsonify({"authenticated": True}), 200
     else:
-        return jsonify({'authenticated': False}), 401
-
-
-@app.route('/login', methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        data = request.json
-        username = data.get("username")
-        password = data.get("password")
-
-        user = users_collection.find_one({"username": username})
-        if user and checkpw(password.encode("utf-8"), user["password"]):
-            session["username"] = str(user["_id"])
-            return redirect(url_for("check_auth"))
-        else:
-            return "Invalid username or password!"
-    return render_template_string('''
-    <form method="post">
-        Username: <input type="text" name="username"><br>
-        Password: <input type="password" name="password"><br>
-        <input type="submit" value="Login">
-    </form>
-    ''')
-
+        return jsonify({"authenticated": False}), 401
+    
 @app.route('/logout', methods=['GET'])
 def logout():
+    # Clear the session data
     session.clear()
+    
+    # Optionally redirect to home or login page
     return jsonify({"message": "Logged out successfully"}), 200
+
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -76,8 +55,10 @@ def register():
 
         users_collection.insert_one({"username": username, "password": hashed_password})
 
+        # add a route for login
         return redirect(url_for("login"))
-
+    
+    # for testing purposes frontend will be better
     return render_template_string('''
     <form method="post">
         Username: <input type="text" name="username"><br>
@@ -86,12 +67,37 @@ def register():
     </form>
     ''')
 
+@app.route("/login", methods=["POST"])
+def login():
+    data = request.json  # expect JSON payload
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required"}), 400
+
+    user = users_collection.find_one({"username": username})
+
+    if user:
+        if checkpw(password.encode("utf-8"), user["password"]):
+            session["user_id"] = str(user["_id"])
+            print(str(user["_id"]))
+            return jsonify({"message": "Login successful"}), 200
+        else:
+            return jsonify({"error": "Incorrect password"}), 401
+    else:
+        return jsonify({"error": "User not found"}), 404
+
+
 @app.route('/document/<id>', methods=['GET'])
 def get_document_by_id(id):
     try:
         document = db.mycollection.find_one({"_id": ObjectId(id)})
         if document:
-            document['_id'] = str(document['_id'])
+            document['_id'] = str(document['_id'])  # first convert object id to string
             return jsonify(document)
         else:
             return jsonify({"error": "Document not found"}), 404
@@ -124,6 +130,15 @@ def update_document_by_name(name):
     else:
         return jsonify({"error": "Document not found"}), 404
 
+# @app.route('/add-test', methods=['GET'])
+# def add_test_document():
+#     test_data = {
+#         "name": "Straw Hats Members",
+#         "description": "Keno, William, Ibrahim, Sam, Eliza"
+#     }
+#     result = db.mycollection.insert_one(test_data)
+#     return jsonify({"_id": str(result.inserted_id), "message": "Document added successfullyy"})
+
 @app.route('/documents', methods=['GET'])
 def get_documents():
     documents = db.mycollection.find()
@@ -154,7 +169,7 @@ def upload_file():
 def process_csv():
     if not os.path.exists(r'uploads'):
         return jsonify({"uploads_folder" : "empty"})
-
+    
     curr_dir = pathlib.Path(__file__).parent.resolve().as_posix()
     uploads_dir = curr_dir + '/uploads'
     pathlist = pathlib.Path(uploads_dir).rglob('*.csv')
@@ -164,10 +179,11 @@ def process_csv():
         path_in_str = str(path)
         if ".csv" in path_in_str:
             break
-
+    
     df = pd.read_csv(path_in_str).to_string()
 
     return jsonify({"file": df})
+
 
 if __name__ == '__main__':
     app.run(debug=True)

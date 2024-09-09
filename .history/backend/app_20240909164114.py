@@ -31,7 +31,7 @@ def home():
 
 def check_auth():
     print(session)
-    if 'username' in session:
+    if 'user_id' in session:
         return jsonify({'authenticated': True, 'username': session['username']}), 200
     else:
         return jsonify({'authenticated': False}), 401
@@ -40,9 +40,8 @@ def check_auth():
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        data = request.json
-        username = data.get("username")
-        password = data.get("password")
+        username = request.form["username"]
+        password = request.form["password"]
 
         user = users_collection.find_one({"username": username})
         if user and checkpw(password.encode("utf-8"), user["password"]):

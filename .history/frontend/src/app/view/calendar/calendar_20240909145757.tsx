@@ -15,22 +15,19 @@ export default function Calendar() {
         // Check if the user is authenticated
         const checkAuthentication = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:5000/check-auth', { withCredentials: true });
-                console.log("Response:", response.data); // Debugging response
+                const response = await axios.get('http://localhost:5000/check-auth', { withCredentials: true });
                 if (response.status === 200 && response.data.authenticated) {
                     setIsAuthenticated(true);
                 } else {
                     throw new Error("User is not authenticated");
                 }
             } catch (error) {
-                console.error("Authentication error:", error); // Log any errors
                 router.push('/login'); // Redirect to login if not authenticated
             }
         };
-    
+
         checkAuthentication();
     }, [router]);
-    
 
     const styles = {
         wrap: {

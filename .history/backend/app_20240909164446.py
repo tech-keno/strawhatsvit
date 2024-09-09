@@ -41,8 +41,8 @@ def check_auth():
 def login():
     if request.method == "POST":
         data = request.json
-        username = data.get("username")
-        password = data.get("password")
+        username = data.get["username"]
+        password = data.get["password"]
 
         user = users_collection.find_one({"username": username})
         if user and checkpw(password.encode("utf-8"), user["password"]):

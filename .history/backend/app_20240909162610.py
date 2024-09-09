@@ -10,15 +10,21 @@ import pandas as pd
 from dotenv import load_dotenv
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SECRET_KEY'] = 'RT'
+app.secret_key = "RT"
+CORS(app, supports_credentials=True, origins=["http://127.0.0.1:3000"])
 
 load_dotenv()
 app.config["MONGO_URI"] = os.getenv("MONGO_URI")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "NP")
+app.config["SESSION_TYPE"] = "filesystem"  # Use filesystem for session storage
+app.config["SESSION_FILE_DIR"] = os.path.join(os.path.abspath(os.getcwd()), 'flask_session')  # Directory for session files
+app.config["SESSION_PERMANENT"] = False  # Session will not be permanent
+app.config["SESSION_USE_SIGNER"] = True  # Ensure sessions are signed
+app.config["SESSION_COOKIE_SAMESITE"] = "None"  # Allows cross-site cookies
+app.config["SESSION_COOKIE_SECURE"] = False  # Use True only if using HTTPS
 
-
-Session(app)
+# Initialize Flask-Session
+session_ext = Session(app)
 
 client = MongoClient(app.config["MONGO_URI"])
 db = client.mydatabase
@@ -27,36 +33,14 @@ users_collection = db["users"]
 @app.route('/')
 def home():
     return "Straw Hats Home Base"
-@app.route('/check-auth', methods=['GET'])
 
+@app.route('/check-auth', methods=['GET'])
 def check_auth():
     print(session)
-    if 'username' in session:
-        return jsonify({'authenticated': True, 'username': session['username']}), 200
+    if 'user_id' in session:
+        return jsonify({"authenticated": True}), 200
     else:
-        return jsonify({'authenticated': False}), 401
-
-
-@app.route('/login', methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        data = request.json
-        username = data.get("username")
-        password = data.get("password")
-
-        user = users_collection.find_one({"username": username})
-        if user and checkpw(password.encode("utf-8"), user["password"]):
-            session["username"] = str(user["_id"])
-            return redirect(url_for("check_auth"))
-        else:
-            return "Invalid username or password!"
-    return render_template_string('''
-    <form method="post">
-        Username: <input type="text" name="username"><br>
-        Password: <input type="password" name="password"><br>
-        <input type="submit" value="Login">
-    </form>
-    ''')
+        return jsonify({"authenticated": False}), 401
 
 @app.route('/logout', methods=['GET'])
 def logout():
@@ -83,6 +67,29 @@ def register():
         Username: <input type="text" name="username"><br>
         Password: <input type="password" name="password"><br>
         <input type="submit" value="Register">
+    </form>
+    ''')
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        user = users_collection.find_one({"username": username})
+
+        if user and checkpw(password.encode("utf-8"), user["password"]):
+            session["user_id"] = str(user["_id"])
+            session.modified = True
+            return redirect(url_for("check_auth"))
+        else:
+            return "Invalid username or password!"
+
+    return render_template_string('''
+    <form method="post">
+        Username: <input type="text" name="username"><br>
+        Password: <input type="password" name="password"><br>
+        <input type="submit" value="Login">
     </form>
     ''')
 

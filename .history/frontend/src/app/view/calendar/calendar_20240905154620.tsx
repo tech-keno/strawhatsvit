@@ -2,66 +2,33 @@
 
 import React, { useEffect, useState } from "react";
 import { DayPilot, DayPilotCalendar } from "@daypilot/daypilot-lite-react";
-import axios from "axios";
-import { useRouter } from 'next/navigation'; // for redirecting
 import data from "./events.json";
 
 export default function Calendar() {
-
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const router = useRouter();
+    const [authenticated, setAuthenticated] = useState(false);
+    const [calendar, setCalendar] = useState<DayPilot.Calendar>();
+    const [config, setConfig] = useState<DayPilot.CalendarConfig>({
+        viewType: "Week",
+        durationBarVisible: false,
+    });
 
     useEffect(() => {
-        // Check if the user is authenticated
-        const checkAuthentication = async () => {
-            try {
-                const response = await axios.get('http://127.0.0.1:5000/check-auth', { withCredentials: true });
-                console.log("Response:", response.data); // Debugging response
-                if (response.status === 200 && response.data.authenticated) {
-                    setIsAuthenticated(true);
-                } else {
-                    throw new Error("User is not authenticated");
-                }
-            } catch (error) {
-                console.error("Authentication error:", error); // Log any errors
-                router.push('/login'); // Redirect to login if not authenticated
+        async function checkAuth() {
+            const response = await fetch('/check-auth');
+            if (response.ok) {
+                setAuthenticated(true);
+            } else {
+                setAuthenticated(false);
+                window.location.href = "/login";  // Redirect to login page
             }
-        };
-    
-        checkAuthentication();
-    }, [router]);
-    
-
-    const styles = {
-        wrap: {
-            display: "flex"
-        },
-        left: {
-            marginRight: "10px"
-        },
-        main: {
-            flexGrow: "1"
         }
-    };
-
-    const colors = [
-        {name: "Green", id: "#6aa84f"},
-        {name: "Blue", id: "#3d85c6"},
-        {name: "Turquoise", id: "#00aba9"},
-        {name: "Light Blue", id: "#56c5ff"},
-        {name: "Yellow", id: "#f1c232"},
-        {name: "Orange", id: "#e69138"},
-        {name: "Red", id: "#cc4125"},
-        {name: "Light Red", id: "#ff0000"},
-        {name: "Purple", id: "#af8ee5"},
-    ];
-
-    const [calendar, setCalendar] = useState<DayPilot.Calendar>();
+        checkAuth();
+    }, []);
 
     const editEvent = async (e: DayPilot.Event) => {
         const form = [
-            {name: "Event text", id: "text", type: "text"},
-            {name: "Event color", id: "backColor", type: "select", options: colors},
+            { name: "Event text", id: "text", type: "text" },
+            { name: "Event color", id: "backColor", type: "select", options: colors },
         ];
 
         const modal = await DayPilot.Modal.form(form, e.data);
@@ -108,13 +75,6 @@ export default function Calendar() {
         ];
     };
 
-    const initialConfig: DayPilot.CalendarConfig = {
-        viewType: "Week",
-        durationBarVisible: false,
-    };
-
-    const [config, setConfig] = useState(initialConfig);
-
     useEffect(() => {
         if (!calendar || calendar?.disposed()) {
             return;
@@ -123,7 +83,7 @@ export default function Calendar() {
 
         const startDate = "2024-10-01";
 
-        calendar.update({startDate, events});
+        calendar.update({ startDate, events });
     }, [calendar]);
 
     const onTimeRangeSelected = async (args: DayPilot.CalendarTimeRangeSelectedArgs) => {
@@ -143,8 +103,8 @@ export default function Calendar() {
         });
     };
 
-    if (!isAuthenticated) {
-        return <p>Checking authentication...</p>; // You can show a loader here
+    if (!authenticated) {
+        return <div>Loading...</div>;  // or a login redirect component
     }
 
     return (
