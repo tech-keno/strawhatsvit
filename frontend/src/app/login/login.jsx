@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './login.css';
+import Image from 'next/image'
+import logo from './vit_logo.png'
 import { redirect } from 'next/navigation'
 
 export default function Login() {
@@ -43,30 +45,35 @@ export default function Login() {
   return (
     <div className="App">
       <header className="App-header">
+        <Image src={logo} alt="VIT Logo" className="App-logo" />
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{ fontWeight: 'bold' }}>Welcome Back</h1>
+        </div>
         <form onSubmit={handleLoginSubmit}>
           <div>
-            <label>Username:</label>
             <input
               type="text"
               name="username"
+              placeholder="Username or ID"
               value={username}
               onChange={handleInputChange}
               required
             />
           </div>
           <div>
-            <label>Password:</label>
             <input
               type="password"
               name="password"
+              placeholder="Password"
               value={password}
               onChange={handleInputChange}
               required
             />
           </div>
-          <button type="submit">Login</button>
+          <button type="submit">Sign In</button>
         </form>
         <p>{responseMessage}</p>
+        <a href="#">Forgot password?</a>
       </header>
     </div>
   );

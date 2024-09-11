@@ -31,6 +31,7 @@ def home():
 
 def check_auth():
     print(session)
+    # return jsonify({'authenticated': True}), 200
     if 'username' in session:
         return jsonify({'authenticated': True, 'username': session['username']}), 200
     else:
