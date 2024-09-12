@@ -50,7 +50,7 @@ def login():
             session["username"] = str(user["_id"])
             return redirect(url_for("check_auth"))
         else:
-            return "Invalid username or password!"
+            return "Invalid username or password!", 401
     return render_template_string('''
     <form method="post">
         Username: <input type="text" name="username"><br>

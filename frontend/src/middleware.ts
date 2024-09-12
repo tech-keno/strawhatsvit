@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 import axios from "axios";
 
 export async function middleware(request: NextRequest) {
-    const isAuthenticated = await checkAuth();
+    const isAuthenticated = await checkAuth(request);
 
     const protectPaths = ['/view']
 
@@ -15,6 +15,7 @@ export async function middleware(request: NextRequest) {
     if (path === "/view") {
         path = "/view/calendar";
     }
+    console.log(request);
 
     if (!isAuthenticated && protectPaths.some(prefix => path.startsWith(prefix))) {
         path = "/login";
@@ -30,19 +31,20 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
 }
 
-async function checkAuth(): Promise<boolean> {
-
+async function checkAuth(request: NextRequest): Promise<boolean> {
+    const cookies = request.cookies.toString()
     // Check if the user is authenticated
     try {
-        const response = await axios.get('http://127.0.0.1:5000/check-auth', { withCredentials: true });
-        console.log("Response:", response.data); // Debugging response
-        if (response.status === 200 && response.data.authenticated) {
+        console.log(cookies);
+        const response = await axios.get('http://127.0.0.1:5000/check-auth', { headers: {Cookie: cookies} });
+        if (response.status === 200) {
+            console.log(response.data);
             return true;
         } else {
             throw new Error("User is not authenticated");
         }
     } catch (error) {
-        console.error("Authentication error:", error); // Log any errors
+        // console.error("Authentication error:", error); // Log any errors
     }
     return false;
 }
