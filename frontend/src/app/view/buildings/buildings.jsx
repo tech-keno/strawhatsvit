@@ -1,105 +1,78 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import { Grid, Input, Select } from 'react-spreadsheet-grid'
+import React, { useState } from 'react';
+import DataTable from 'react-data-table-component';
 
 export default function Buildings() {
-    // Example initial rows
     const initialRows = [
-        { id: 'user1', name: 'John Doe', positionId: 'position1', managerId: 'manager1' },
-        { id: 'user2', name: 'Jane Doe', positionId: 'position2', managerId: 'manager2' }
+        { id: 'building1', name: 'Building A', capacity: '100', rooms: '10' }
     ];
 
-    // Example positions (you may define your real positions list)
-    const somePositions = [
-        { id: 'position1', name: 'Manager' },
-        { id: 'position2', name: 'Developer' },
-        { id: 'position3', name: 'Designer' }
-    ];
+    const [gridRows, setGridRows] = useState(initialRows);
 
-    // Example managers (you may define your real managers list)
-    const someManagers = [
-        { id: 'manager1', name: 'Alice Johnson' },
-        { id: 'manager2', name: 'Bob Smith' }
-    ];
-
-    const MyAwesomeGrid = () => {
-        // Rows are stored in the state.
-        const [gridRows, setGridRows] = useState(initialRows);
-
-        // A callback called every time a value is changed.
-        const onFieldChange = (rowId, field) => (value) => {
-            // Find the row that is being changed
-            const updatedRows = gridRows.map(row => 
-                row.id === rowId ? { ...row, [field]: value } : row
-            );
-            setGridRows(updatedRows);
-        };
-
-        const initColumns = () => [
-          {
-            title: () => 'Name',
-            value: (row, { focus }) => {
-              // You can use the built-in Input.
-              return (
-                <Input
-                  value={row.name}
-                  focus={focus}
-                  onChange={e => onFieldChange(row.id, 'name')(e.target.value)}
-                />
-              );
-            }
-          }, {
-            title: () => 'Position',
-            value: (row, { focus }) => {
-                // You can use the built-in Select.
-                return (
-                    <Select
-                      value={row.positionId}
-                      isOpen={focus}
-                      items={somePositions}
-                      onSelect={item => onFieldChange(row.id, 'positionId')(item.id)}
-                      renderItem={item => item.name}
-                    />
-                );
-            }
-          }, {
-            title: () => 'Manager',
-            value: (row, { focus }) => {
-              // You can use any component for autocomplete, this is just a placeholder.
-              return (
-                <Select
-                  value={row.managerId}
-                  isOpen={focus}
-                  items={someManagers}
-                  onSelect={item => onFieldChange(row.id, 'managerId')(item.id)}
-                  renderItem={item => item.name}
-                />
-              );
-            }
-          }
-        ];
-
-        // Placeholder for column resize event, if needed
-        const onColumnResize = (column, newWidth) => {
-            console.log(`Column resized: ${column}, New width: ${newWidth}`);
-        };
-
-        return (
-            <Grid
-                columns={initColumns()}
-                rows={gridRows}
-                isColumnsResizable
-                onColumnResize={onColumnResize}
-                getRowKey={row => row.id}
-            />
+    const onFieldChange = (rowId, field, value) => {
+        const updatedRows = gridRows.map(row =>
+            row.id === rowId ? { ...row, [field]: value } : row
         );
+        setGridRows(updatedRows);
     };
+
+    const addRow = () => {
+        const newRow = {
+            id: `building${gridRows.length + 1}`,
+            name: '',
+            capacity: '',
+            rooms: ''
+        };
+        setGridRows([...gridRows, newRow]);
+    };
+
+    const columns = [
+        {
+            name: 'Building Name',
+            selector: row => row.name,
+            cell: row => (
+                <input
+                    type="text"
+                    value={row.name}
+                    onChange={e => onFieldChange(row.id, 'name', e.target.value)}
+                />
+            )
+        },
+        {
+            name: 'Capacity',
+            selector: row => row.capacity,
+            cell: row => (
+                <input
+                    type="text"
+                    value={row.capacity}
+                    onChange={e => onFieldChange(row.id, 'capacity', e.target.value)}
+                />
+            )
+        },
+        {
+            name: 'Rooms',
+            selector: row => row.rooms,
+            cell: row => (
+                <input
+                    type="text"
+                    value={row.rooms}
+                    onChange={e => onFieldChange(row.id, 'rooms', e.target.value)}
+                />
+            )
+        }
+    ];
 
     return (
         <div>
             <h1>Buildings Grid</h1>
-            <MyAwesomeGrid />
+            <DataTable
+                columns={columns}
+                data={gridRows} 
+                noHeader
+                pagination
+            />
+            <button onClick={addRow}>Add New Row</button>
         </div>
     );
 }
