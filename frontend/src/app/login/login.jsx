@@ -27,12 +27,18 @@ export default function Login() {
       const response = await axios.post('http://127.0.0.1:5000/login', {
         username,
         password,
-      }, { withCredentials: true }) 
+      }, { withCredentials: true });
+  
+      // Log the response to the console
+      console.log('Server Response:', response);
+  
       if (response.status === 200) {
         setResponseMessage('Login successful');
         window.location.href = '/view/calendar'; 
       }
     } catch (error) {
+      console.log('Error Response:', error); // Log the error to the console
+  
       if (error.response && error.response.data.error) {
         setResponseMessage(`Error: ${error.response.data.error}`);
       } else {
@@ -40,6 +46,7 @@ export default function Login() {
       }
     }
   };
+  
   
 
   return (
