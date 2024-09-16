@@ -1,5 +1,10 @@
+import Buildings from './buildings.jsx'
+
 export default function Home() {
-    return (
-        <p>buildings</p>
-    )
-  }
+  return (
+    <div>
+      {/* <p>buildings</p> */}
+      <Buildings/>
+    </div>
+  )
+}
