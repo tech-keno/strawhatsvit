@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template_string, redirect, url_for, session, jsonify
-from flask_session import Session  # Import Flask-Session
+from flask_session import Session
 from bcrypt import hashpw, gensalt, checkpw
 from flask_cors import CORS
 from pymongo import MongoClient
@@ -11,7 +11,8 @@ from dotenv import load_dotenv
 from algo import algo
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
+
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SECRET_KEY'] = 'RT'
 
@@ -165,4 +166,5 @@ def process_csv():
     
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)
+    
