@@ -8,6 +8,7 @@ import os
 import pathlib
 import pandas as pd
 from dotenv import load_dotenv
+from algo import algo
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -153,22 +154,15 @@ def upload_file():
 
 @app.route('/process', methods = ['GET'])
 def process_csv():
-    if not os.path.exists(r'uploads'):
-        return jsonify({"uploads_folder" : "empty"})
+    try :
+        algo()
+        return jsonify({"message": "File uploaded successfully"}), 200
 
-    curr_dir = pathlib.Path(__file__).parent.resolve().as_posix()
-    uploads_dir = curr_dir + '/uploads'
-    pathlist = pathlib.Path(uploads_dir).rglob('*.csv')
-    path_in_str = ""
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "Invalid ID format"}), 400
 
-    for path in pathlist:
-        path_in_str = str(path)
-        if ".csv" in path_in_str:
-            break
-
-    df = pd.read_csv(path_in_str).to_string()
-
-    return jsonify({"file": df})
+    
 
 if __name__ == '__main__':
     app.run(debug=True)
