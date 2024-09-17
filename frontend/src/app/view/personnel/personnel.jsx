@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import DataTable from 'react-data-table-component';
 
-export default function Buildings() {
-    // Initial rows structure: Name, Capacity, Rooms
+export default function Personnel() {
+    // Initial rows structure: Staff/Student, ID, Name, Course Enrolled
     const initialRows = [
-        { id: 'building1', name: 'Building A', capacity: '100', rooms: '10' }
+        { id: 'person1', role: 'Staff', idNumber: 'S123', name: 'John Doe', courseEnrolled: 'N/A' }
     ];
 
     const [gridRows, setGridRows] = useState(initialRows);
@@ -22,10 +22,11 @@ export default function Buildings() {
     // Function to add a new row
     const addRow = () => {
         const newRow = {
-            id: `building${gridRows.length + 1}`,
+            id: `person${gridRows.length + 1}`,
+            role: '',
+            idNumber: '',
             name: '',
-            capacity: '',
-            rooms: ''
+            courseEnrolled: ''
         };
         setGridRows([...gridRows, newRow]);
     };
@@ -33,7 +34,29 @@ export default function Buildings() {
     // Define columns for the DataTable component
     const columns = [
         {
-            name: 'Building Name',
+            name: 'Staff/Student',
+            selector: row => row.role,
+            cell: row => (
+                <input
+                    type="text"
+                    value={row.role}
+                    onChange={e => onFieldChange(row.id, 'role', e.target.value)}
+                />
+            )
+        },
+        {
+            name: 'ID',
+            selector: row => row.idNumber,
+            cell: row => (
+                <input
+                    type="text"
+                    value={row.idNumber}
+                    onChange={e => onFieldChange(row.id, 'idNumber', e.target.value)}
+                />
+            )
+        },
+        {
+            name: 'Name',
             selector: row => row.name,
             cell: row => (
                 <input
@@ -44,36 +67,22 @@ export default function Buildings() {
             )
         },
         {
-            name: 'Capacity',
-            selector: row => row.capacity,
+            name: 'Course Enrolled',
+            selector: row => row.courseEnrolled,
             cell: row => (
                 <input
                     type="text"
-                    value={row.capacity}
-                    onChange={e => onFieldChange(row.id, 'capacity', e.target.value)}
-                />
-            )
-        },
-        {
-            name: 'Rooms',
-            selector: row => row.rooms,
-            cell: row => (
-                <input
-                    type="text"
-                    value={row.rooms}
-                    onChange={e => onFieldChange(row.id, 'rooms', e.target.value)}
+                    value={row.courseEnrolled}
+                    onChange={e => onFieldChange(row.id, 'courseEnrolled', e.target.value)}
                 />
             )
         }
     ];
 
     return (
-        <div className="container mx-auto p-6">
-            {/* Flex container to align the header and buttons */}
+        <div className="px-4 py-6">
             <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">Buildings</h1>
-
-                {/* Add New Row and Save Buttons */}
+                <h1 className="text-2xl font-bold">Personnel</h1>
                 <div className="flex space-x-2">
                     <button 
                         onClick={addRow} 
@@ -88,8 +97,6 @@ export default function Buildings() {
                     </button>
                 </div>
             </div>
-
-            {/* DataTable */}
             <DataTable
                 columns={columns}
                 data={gridRows}

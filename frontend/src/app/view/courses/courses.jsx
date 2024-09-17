@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import DataTable from 'react-data-table-component';
 
-export default function Buildings() {
-    // Initial rows structure: Name, Capacity, Rooms
+export default function Courses() {
+    // Initial rows structure: Course Name, Prerequisites, Students Enrolled, Subjects
     const initialRows = [
-        { id: 'building1', name: 'Building A', capacity: '100', rooms: '10' }
+        { id: 'course1', courseName: 'Course A', prerequisites: 'None', studentsEnrolled: '50', subjects: '5' }
     ];
 
     const [gridRows, setGridRows] = useState(initialRows);
@@ -22,10 +22,11 @@ export default function Buildings() {
     // Function to add a new row
     const addRow = () => {
         const newRow = {
-            id: `building${gridRows.length + 1}`,
-            name: '',
-            capacity: '',
-            rooms: ''
+            id: `course${gridRows.length + 1}`,
+            courseName: '',
+            prerequisites: '',
+            studentsEnrolled: '',
+            subjects: ''
         };
         setGridRows([...gridRows, newRow]);
     };
@@ -33,47 +34,55 @@ export default function Buildings() {
     // Define columns for the DataTable component
     const columns = [
         {
-            name: 'Building Name',
-            selector: row => row.name,
+            name: 'Course Name',
+            selector: row => row.courseName,
             cell: row => (
                 <input
                     type="text"
-                    value={row.name}
-                    onChange={e => onFieldChange(row.id, 'name', e.target.value)}
+                    value={row.courseName}
+                    onChange={e => onFieldChange(row.id, 'courseName', e.target.value)}
                 />
             )
         },
         {
-            name: 'Capacity',
-            selector: row => row.capacity,
+            name: 'Prerequisites',
+            selector: row => row.prerequisites,
             cell: row => (
                 <input
                     type="text"
-                    value={row.capacity}
-                    onChange={e => onFieldChange(row.id, 'capacity', e.target.value)}
+                    value={row.prerequisites}
+                    onChange={e => onFieldChange(row.id, 'prerequisites', e.target.value)}
                 />
             )
         },
         {
-            name: 'Rooms',
-            selector: row => row.rooms,
+            name: 'Students Enrolled',
+            selector: row => row.studentsEnrolled,
             cell: row => (
                 <input
                     type="text"
-                    value={row.rooms}
-                    onChange={e => onFieldChange(row.id, 'rooms', e.target.value)}
+                    value={row.studentsEnrolled}
+                    onChange={e => onFieldChange(row.id, 'studentsEnrolled', e.target.value)}
+                />
+            )
+        },
+        {
+            name: 'Subjects',
+            selector: row => row.subjects,
+            cell: row => (
+                <input
+                    type="text"
+                    value={row.subjects}
+                    onChange={e => onFieldChange(row.id, 'subjects', e.target.value)}
                 />
             )
         }
     ];
 
     return (
-        <div className="container mx-auto p-6">
-            {/* Flex container to align the header and buttons */}
+        <div className="px-4 py-6">
             <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">Buildings</h1>
-
-                {/* Add New Row and Save Buttons */}
+                <h1 className="text-2xl font-bold">Courses</h1>
                 <div className="flex space-x-2">
                     <button 
                         onClick={addRow} 
@@ -88,8 +97,6 @@ export default function Buildings() {
                     </button>
                 </div>
             </div>
-
-            {/* DataTable */}
             <DataTable
                 columns={columns}
                 data={gridRows}
