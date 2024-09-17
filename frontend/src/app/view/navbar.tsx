@@ -30,13 +30,13 @@ export default function Navbar() {
           </div>
           <div><NavLink path='calendar' text='TIMETABLE'></NavLink></div>
           <div><NavLink path='buildings' text='BUILDING'></NavLink></div>
-          <div><NavLink path='students' text='PERSONNEL'></NavLink></div>
+          <div><NavLink path='personnel' text='PERSONNEL'></NavLink></div>
           <div><NavLink path='courses' text='COURSES'></NavLink></div>
         </div>
         <div>
           <button
             onClick={handleLogout} 
-            className="text-2xl text-gray-600 hover:text-blue-600 font-mono font-extrabold text-white">
+            className="text-2xl text-white hover:text-black hover:bg-gray-300 p-2 rounded font-mono font-extrabold">
             LOGOUT
           </button>
         </div>
@@ -50,15 +50,21 @@ interface LinkProp {
     text: string
 }
 
-const NavLink: React.FC<LinkProp> = ({ path, text }) =>{
-    return(
-        <li>
-          <Link 
-            href={path} 
-            className={`text-2xl text-gray-600 hover:text-blue-600 font-mono font-extrabold text-white`}
-          >
-            {text}
-          </Link>
-        </li>
-    );
+const NavLink: React.FC<LinkProp> = ({ path, text }) => {
+  const pathname = usePathname();
+
+  console.log('Current Path:', pathname); // Debugging to see the value of pathname
+
+  return (
+    <li>
+      <Link
+        href={path}
+        className={`text-2xl font-mono font-extrabold p-2 rounded
+          ${pathname === `/${path}` ? 'bg-gray-300 text-black' : 'text-white'}
+          hover:bg-gray-300 hover:text-black`}
+      >
+        {text}
+      </Link>
+    </li>
+  );
 };
