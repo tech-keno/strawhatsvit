@@ -16,6 +16,9 @@ jobs:
         python-version: [3.9]
 
     steps:
+    - name: Get directory
+        run: ls backend/uploads
+        
     - name: Checkout code
       uses: actions/checkout@v3
 
