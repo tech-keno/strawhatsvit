@@ -1,10 +1,14 @@
 import pandas as pd
 
+# df1: given data from the client
+# df2: input take from the website
 df1 = pd.read_csv("uploads/Sample enrolment data.csv")
 df2 = pd.read_excel("uploads/otherstuff.xlsx")
 
-def algo():
-
+"""
+Create JSON Representation of a class eg. {MITS101: {length : -1, Lecturer: Jake...}, MITS102: }
+""" 
+def make_classes():
     name_classes = {}
     student_names = df1["Student Name"].to_list()
     classes = df2["Unit"].to_list()
@@ -13,12 +17,9 @@ def algo():
     lecturer = df2["Lecturer"].to_list()
     classroom = df2["Classroom"].to_list()
     delivery_m = df2["Delivery Mode"].to_list()
-
-
     clas_dict = {}
 
-
-
+    # Classes that don't have a length are just left blank
     for clas in range(len(classes)):
         c = classes[clas]
         if c not in clas_dict:
@@ -36,19 +37,23 @@ def algo():
                 clas_dict[c]["delivery_mode"] = delivery_m[clas]
                 clas_dict[c]["classroom"] = classroom[clas]
                 clas_dict[c]["lecturer"] = lecturer[clas]
-                    
+    return clas_dict
 
+"""
+Main Algorithm, performs the allocation process of students to specific time periods
+"""
 
-
+def algo():
+    removed_classes = set()
     timetable_dict = {}
 
+    # Allocate a slot per hour 12 * 5 = 60, 12 hours a day, five days a week
     for i in range(0,60):
-        timetable_dict[i] = (set(), set())
-        
-    removed_classes = set()
-        
+        timetable_dict[i] = (set(), set())  
 
+    clas_dict = make_classes()
 
+    # Basic Algorithm: For each hour check if you can place a certain class inside the slot, if there are any students don't add the class to the slot
     for i in range(0, 60):
         for clas in clas_dict:   
             if clas_dict[clas]["length"] > 0 and clas not in removed_classes:
@@ -58,59 +63,19 @@ def algo():
                     if len(temp_set) != len(clas_dict[clas]["students"]):
                         can_schedule = False
                         break              
-                    if can_schedule:
-                        for insert in range(clas_dict[clas]["length"]):
-                            timetable_dict[i + insert][1].update(clas_dict[clas]["students"])
-                            timetable_dict[i + insert][0].add(clas)
-                        removed_classes.add(clas)
+                if can_schedule:
+                    for insert in range(clas_dict[clas]["length"]):
+                        timetable_dict[i + insert][1].update(clas_dict[clas]["students"])
+                        timetable_dict[i + insert][0].add(clas)
+                    removed_classes.add(clas)
 
-
-
-
-    times = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM']
-    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-
-
-    f_classes = []
-    f_times = []
-    classroom = []
-    f_days = []
-    lecturer = []
-    delivery_mode = []
-
-
-
-
-
-    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-
-
-    def convert_index_to_time(index):
-        day = days[index // 12]
-        hour = 8 + (index % 12) 
-        if hour < 12:
-            time = f'{hour}:00 AM'
-        elif hour == 12:
-            time = '12:00 PM'
-        else:
-            time = f'{hour - 12}:00 PM'
-        return day, time, hour
-
-    def convert_num_time(time):
-        
-        if time > 12:
-            ret = f'{time - 12}:00 PM'
-        elif time < 12:
-            ret = f'{time}:00 AM'
-        else:
-            ret = "12:00 PM"
-        return ret
 
     rows = []
     used_classes = set()
 
     start_time = None
 
+    # Export the timetable to an excel formula
     for time_index in range(60):
         day, start_time, hour = convert_index_to_time(time_index)
         for clas in timetable_dict[time_index][0]:
@@ -125,10 +90,35 @@ def algo():
                 })
                 used_classes.add(clas)
                 
-            
-        
     to_convert = pd.DataFrame(rows)
 
-    excel_file = "output/magic.xlsx"
+    excel_file = "output/magic1.xlsx"
     to_convert.to_excel(excel_file, index=False)
-            
+
+
+"""
+Converts a specific index to a time period, 8am-8pm
+"""
+def convert_index_to_time(index):
+    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+    day = days[index // 12]
+    hour = 8 + (index % 12) 
+    if hour < 12:
+        time = f'{hour}:00 AM'
+    elif hour == 12:
+        time = '12:00 PM'
+    else:
+        time = f'{hour - 12}:00 PM'
+    return day, time, hour
+
+"""
+Convert int to string format
+"""
+def convert_num_time(time):
+    if time > 12:
+        ret = f'{time - 12}:00 PM'
+    elif time < 12:
+        ret = f'{time}:00 AM'
+    else:
+        ret = "12:00 PM"
+    return ret

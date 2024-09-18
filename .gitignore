@@ -1,2 +1,3 @@
 /.history
 /flask_session
+.env
