@@ -8,20 +8,17 @@ on:
 
 jobs:
   build:
-    
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         python-version: [3.9]
-    
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
-          ref: frontend 
+        ref: frontend 
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -32,17 +29,23 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r backend/requirements.txt
-    - name: Install MongoDB
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y mongodb
 
-    # Start MongoDB service
+    - name: Add MongoDB repository
+      run: |
+        wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+        echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+        sudo apt-get update
+
+    - name: Install MongoDB
+      run: sudo apt-get install -y mongodb-org
+
+
     - name: Start MongoDB
       run: |
-        sudo systemctl start mongodb
-        sudo systemctl status mongodb
+        sudo systemctl start mongod
+        sudo systemctl status mongod
 
+    # Run tests
     - name: Run tests
       run: |
         python3 backend/testing_app.py
