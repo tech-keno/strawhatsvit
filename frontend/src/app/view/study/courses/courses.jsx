@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import DataTable from 'react-data-table-component';
 
 export default function Courses() {
-    // Initial rows structure: Course Name, Prerequisites, Students Enrolled, Subjects
+    // Initial rows structure: Course Name, Students Enrolled, Subjects
     const initialRows = [
-        { id: 'course1', courseName: 'Course A', prerequisites: 'None', studentsEnrolled: '50', subjects: '5' }
+        { id: 'course1', courseName: 'Course A', studentsEnrolled: '50', subjects: '5' }
     ];
 
     const [gridRows, setGridRows] = useState(initialRows);
@@ -24,7 +24,6 @@ export default function Courses() {
         const newRow = {
             id: `course${gridRows.length + 1}`,
             courseName: '',
-            prerequisites: '',
             studentsEnrolled: '',
             subjects: ''
         };
@@ -62,17 +61,6 @@ export default function Courses() {
                     type="text"
                     value={row.courseName}
                     onChange={e => onFieldChange(row.id, 'courseName', e.target.value)}
-                />
-            )
-        },
-        {
-            name: 'Prerequisites',
-            selector: row => row.prerequisites,
-            cell: row => (
-                <input
-                    type="text"
-                    value={row.prerequisites}
-                    onChange={e => onFieldChange(row.id, 'prerequisites', e.target.value)}
                 />
             )
         },

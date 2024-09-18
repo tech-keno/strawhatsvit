@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import DataTable from 'react-data-table-component';
 
-export default function Personnel() {
-    // Initial rows structure: Staff/Student, ID, Name, Course Enrolled
+export default function Students() {
+    // Initial rows structure:  ID, Name, Course Enrolled
     const initialRows = [
-        { id: 'person1', role: 'Staff', idNumber: 'S123', name: 'John Doe', courseEnrolled: 'N/A' }
+        { id: 'person1', idNumber: 'S123', name: 'John Doe', courseEnrolled: 'N/A' }
     ];
 
     const [gridRows, setGridRows] = useState(initialRows);
@@ -23,7 +23,6 @@ export default function Personnel() {
     const addRow = () => {
         const newRow = {
             id: `person${gridRows.length + 1}`,
-            role: '',
             idNumber: '',
             name: '',
             courseEnrolled: ''
@@ -53,17 +52,6 @@ export default function Personnel() {
     
     // Define columns for the DataTable component
     const columns = [
-        {
-            name: 'Staff/Student',
-            selector: row => row.role,
-            cell: row => (
-                <input
-                    type="text"
-                    value={row.role}
-                    onChange={e => onFieldChange(row.id, 'role', e.target.value)}
-                />
-            )
-        },
         {
             name: 'ID',
             selector: row => row.idNumber,
@@ -102,7 +90,7 @@ export default function Personnel() {
     return (
         <div className="px-4 py-6">
             <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">Personnel</h1>
+                <h1 className="text-2xl font-bold">Students</h1>
                 <div className="flex space-x-2">
                     <button 
                         onClick={addRow} 
