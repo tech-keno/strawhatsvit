@@ -1,9 +1,17 @@
 import pandas as pd
+import os 
 
 # df1: given data from the client
 # df2: input take from the website
-df1 = pd.read_csv("uploads/Sample enrolment data.csv")
-df2 = pd.read_excel("uploads/otherstuff.xlsx")
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Construct absolute paths for the files
+df1_path = os.path.join(current_dir, "uploads/Sample enrolment data.csv")
+df2_path = os.path.join(current_dir, "uploads/otherstuff.xlsx")
+
+# Load the data
+df1 = pd.read_csv(df1_path)
+df2 = pd.read_excel(df2_path)
 
 """
 Create JSON Representation of a class eg. {MITS101: {length : -1, Lecturer: Jake...}, MITS102: }
@@ -92,7 +100,7 @@ def algo():
                 
     to_convert = pd.DataFrame(rows)
 
-    excel_file = "output/magic1.xlsx"
+    excel_file = "output/magic3.xlsx"
     to_convert.to_excel(excel_file, index=False)
 
 
