@@ -17,8 +17,9 @@ jobs:
 
     steps:
     - name: Get directory
-        run: ls backend/uploads
-        
+      run: |
+        ls backend/uploads
+
     - name: Checkout code
       uses: actions/checkout@v3
 
