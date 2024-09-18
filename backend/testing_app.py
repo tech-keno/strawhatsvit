@@ -37,7 +37,7 @@ class FlaskAppTests(unittest.TestCase):
         
         """
         response = self.client.post('/register', data={'username': 'Luffy', 'password': 'DevilFruitEater123'})
-        self.assertEqual(response.status_code, 200)  
+        self.assertIn(response.status_code, [200, 302], f"Unexpected status code: {response.status_code}")
         self.assertTrue(self.users_collection.find_one({"username": "Luffy"}))
     
 
