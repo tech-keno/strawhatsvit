@@ -104,8 +104,12 @@ def get_document_by_id(id):
 @app.route('/document', methods=['POST'])
 def add_document():
     data = request.json
-    result = db.mycollection.insert_one(data)
-    return jsonify({"_id": str(result.inserted_id), "message": "Document added"}), 201
+    if isinstance(data, list) and len(data) > 0:
+        result = db.mycollection.insert_one(data[0])  
+        return jsonify({"_id": str(result.inserted_id), "message": "Document added"}), 201
+    else:
+        return jsonify({"error": "Invalid data format"}), 400
+
 
 @app.route('/document/<id>', methods=['DELETE'])
 def delete_document(id):

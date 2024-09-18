@@ -30,7 +30,27 @@ export default function Personnel() {
         };
         setGridRows([...gridRows, newRow]);
     };
-
+    const saveData = () => {
+        fetch('http://127.0.0.1:5000/document', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(gridRows),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert('Data saved successfully!');
+            } else {
+                alert('Failed to save data');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    };
+    
     // Define columns for the DataTable component
     const columns = [
         {
@@ -91,6 +111,7 @@ export default function Personnel() {
                         +
                     </button>
                     <button 
+                    onClick={saveData}
                         className="px-4 py-2 bg-black text-white rounded shadow transition duration-200 ease-in-out transform hover:bg-gray-800 hover:scale-105 active:scale-95"
                     >
                         SAVE
