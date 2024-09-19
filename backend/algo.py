@@ -10,13 +10,17 @@ df1_path = os.path.join(current_dir, "uploads/Sample enrolment data.csv")
 df2_path = os.path.join(current_dir, "uploads/otherstuff.xlsx")
 
 # Load the data
-df1 = pd.read_csv(df1_path)
-df2 = pd.read_excel(df2_path)
+def main():
+    df1 = pd.read_csv(df1_path)
+    df2 = pd.read_excel(df2_path)
+    algo(df1, df2)
+
+
 
 """
 Create JSON Representation of a class eg. {MITS101: {length : -1, Lecturer: Jake...}, MITS102: }
 """ 
-def make_classes():
+def make_classes(df1, df2):
     name_classes = {}
     student_names = df1["Student Name"].to_list()
     classes = df2["Unit"].to_list()
@@ -51,7 +55,8 @@ def make_classes():
 Main Algorithm, performs the allocation process of students to specific time periods
 """
 
-def algo():
+def algo(df1, df2):
+    
     removed_classes = set()
     timetable_dict = {}
 
@@ -59,7 +64,7 @@ def algo():
     for i in range(0,60):
         timetable_dict[i] = (set(), set())  
 
-    clas_dict = make_classes()
+    clas_dict = make_classes(df1, df2)
 
     # Basic Algorithm: For each hour check if you can place a certain class inside the slot, if there are any students don't add the class to the slot
     for i in range(0, 60):
@@ -100,13 +105,16 @@ def algo():
                 
     to_convert = pd.DataFrame(rows)
 
-    excel_file = "output/magic3.xlsx"
+    excel_file = "output/magic4.xlsx"
     to_convert.to_excel(excel_file, index=False)
+    return rows
 
 
 """
 Converts a specific index to a time period, 8am-8pm
 """
+
+
 def convert_index_to_time(index):
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
     day = days[index // 12]

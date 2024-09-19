@@ -2,6 +2,10 @@ import unittest
 from app import app, client, db, users_collection 
 from bson.objectid import ObjectId
 import os
+from io import StringIO
+import pandas as pd
+from algo import algo, make_classes
+
 
 class FlaskAppTests(unittest.TestCase):
     
@@ -142,6 +146,52 @@ class FlaskAppTests(unittest.TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertIn(b'File uploaded successfully', response.data)
     
+    def setUp(self):
+        # Sample enrolment data for df1
+        enrolment_data = StringIO("""
+Student Name,MITS101,MITS102
+Alice,ENRL,ENRL
+Bob,,ENRL
+Charlie,ENRL,
+        """)
+        
+        # Sample classes data for df2
+        classes_data = StringIO("""
+Unit,Time,Lecturer,Classroom,Delivery Mode
+MITS101,2,Jake,Room 101,Online
+MITS102,1,Sarah,Room 102,In-Person
+        """)
+        
+        self.df1 = pd.read_csv(enrolment_data)
+        self.df2 = pd.read_csv(classes_data)
+
+    def test_make_classes(self):
+        expected_output = {
+            "MITS101": {
+                "students": {"Alice", "Charlie"},
+                "length": 2,
+                "delivery_mode": "Online",
+                "classroom": "Room 101",
+                "lecturer": "Jake"
+            },
+            "MITS102": {
+                "students": {"Alice", "Bob"},
+                "length": 1,
+                "delivery_mode": "In-Person",
+                "classroom": "Room 102",
+                "lecturer": "Sarah"
+            }
+        }
+
+    
+
+        result = make_classes(self.df1, self.df2)
+        self.assertEqual(result, expected_output)
+
+    def test_algo(self):
+        expected_output = [{'Day': 'Monday', 'Time': '8:00 AM to 10:00 AM', 'Unit': 'MITS101', 'Classroom': 'Room 101', 'Lecturer': 'Jake', 'Delivery Mode': 'Online'}, {'Day': 'Monday', 'Time': '10:00 AM to 11:00 AM', 'Unit': 'MITS102', 'Classroom': 'Room 102', 'Lecturer': 'Sarah', 'Delivery Mode': 'In-Person'}]
+        result = algo(self.df1, self.df2)
+        self.assertEqual(result, expected_output)
     # def clean_up(self):
     #     # delete everything in databases and uploads
     #     self.db.mycollection.delete_many({})

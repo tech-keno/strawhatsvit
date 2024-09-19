@@ -8,7 +8,7 @@ import os
 import pathlib
 import pandas as pd
 from dotenv import load_dotenv
-from algo import algo
+from algo import main
 
 app = Flask(__name__)
 
@@ -160,7 +160,7 @@ def upload_file():
 @app.route('/process', methods = ['GET'])
 def process_csv():
     try :
-        algo()
+        main()
         return jsonify({"message": "File uploaded successfully"}), 200
 
     except Exception as e:
