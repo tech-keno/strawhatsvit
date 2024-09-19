@@ -13,7 +13,11 @@ df2_path = os.path.join(current_dir, "uploads/otherstuff.xlsx")
 def main():
     df1 = pd.read_csv(df1_path)
     df2 = pd.read_excel(df2_path)
-    algo(df1, df2)
+    rows = algo(df1, df2)
+    to_convert = pd.DataFrame(rows)
+
+    excel_file = "output/magic4.xlsx"
+    to_convert.to_excel(excel_file, index=False)
 
 
 
@@ -103,10 +107,7 @@ def algo(df1, df2):
                 })
                 used_classes.add(clas)
                 
-    to_convert = pd.DataFrame(rows)
-
-    excel_file = "output/magic4.xlsx"
-    to_convert.to_excel(excel_file, index=False)
+    
     return rows
 
 

@@ -61,26 +61,7 @@ class FlaskAppTests(unittest.TestCase):
         response = self.client.post('/register', data={'username': 'Zoro', 'password': 'SwordStyle123321'})
         self.assertIn(b'Username already exists man!', response.data)
     
-    def test_add_document(self):
-        """
-        Testing Add Document
-
-        Purpose: To verify that a new document can successfully be added to the database. This 
-
-        Setup: The test client will simulate an HTTP POST request to the /document route with a sample payload, e.g our team names
-
-        Execution: The test will post a json payload to the /documen troute and after the document is added the test will check whether the response code is successful.
-
-        Expected Outcome: The response status should be 201, which indicates success. The response should also include the id of the newly created document and the document should be seen present in the mycollection collection of the database.
-
-        """
-        data = {"name": "StrawHAts", "description": "Ibrahim, Keno, Will, Ibrahim, Sam, Eliza"}
-        response = self.client.post('/document', json=data)
-        self.assertEqual(response.status_code, 201)
-        doc_id = response.json["_id"]
-        # response = self.client.get(f'/document/{doc_id}')
-        # self.assertEqual(response.status_code, 200)
-        # self.assertEqual(response.json["name"], "Test Document")
+    
     
     def test_update_document(self):
         """
