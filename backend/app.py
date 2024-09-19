@@ -12,16 +12,21 @@ from algo import main
 
 app = Flask(__name__)
 
+# Enable Cors so we can communicate with frontend
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
+
+# Configure session management to use the filesystem
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SECRET_KEY'] = 'RT'
 
+# Load environment variables from .env file
 load_dotenv()
 app.config["MONGO_URI"] = os.getenv("MONGO_URI")
 
 
 Session(app)
 
+# Setting up database
 client = MongoClient(app.config["MONGO_URI"])
 db = client.mydatabase
 users_collection = db["users"]
@@ -29,8 +34,9 @@ users_collection = db["users"]
 @app.route('/')
 def home():
     return "Straw Hats Home Base"
-@app.route('/check-auth', methods=['GET'])
 
+# Route to check user authentication status
+@app.route('/check-auth', methods=['GET'])
 def check_auth():
     print(session)
     # return jsonify({'authenticated': True}), 200
@@ -40,6 +46,7 @@ def check_auth():
         return jsonify({'authenticated': False}), 401
 
 
+# Route for login
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -61,11 +68,13 @@ def login():
     </form>
     ''')
 
+# Logout route to clear user session
 @app.route('/logout', methods=['GET'])
 def logout():
     session.clear()
     return jsonify({"message": "Logged out successfully"}), 200
 
+# Register route to create a new user
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -89,6 +98,7 @@ def register():
     </form>
     ''')
 
+# Route to get a document from MongoDB by its ID
 @app.route('/document/<id>', methods=['GET'])
 def get_document_by_id(id):
     try:
@@ -101,16 +111,30 @@ def get_document_by_id(id):
     except:
         return jsonify({"error": "Invalid ID format"}), 400
 
+# Route to add a new document to the collection
 @app.route('/document', methods=['POST'])
 def add_document():
     data = request.json
     if isinstance(data, list) and len(data) > 0:
-        result = db.mycollection.insert_one(data[0])  
+        result = db.info.insert_one(data[0])  
         return jsonify({"_id": str(result.inserted_id), "message": "Document added"}), 201
     else:
         return jsonify({"error": "Invalid data format"}), 400
 
+@app.route('/document/<collection_name>', methods=['POST'])
+def save_document(collection_name):
+    data = request.get_json()
+    if data:
+        collection = db[collection_name]
+        for item in data:
+            # Ensure each document has a unique 'id' field
+            collection.update_one({'id': item['id']}, {'$set': item}, upsert=True)
+        return jsonify({"message": "Data saved successfully!"}), 200
+    return jsonify({"message": "No data received"}), 400
 
+
+
+# Route to delete a document by its ID
 @app.route('/document/<id>', methods=['DELETE'])
 def delete_document(id):
     try:
@@ -122,6 +146,7 @@ def delete_document(id):
     except:
         return jsonify({"error": "Invalid ID format"}), 400
 
+# Route to update a document by its name
 @app.route('/document/name/<name>', methods=['PUT'])
 def update_document_by_name(name):
     data = request.json
@@ -131,12 +156,25 @@ def update_document_by_name(name):
     else:
         return jsonify({"error": "Document not found"}), 404
 
+# Route to retrieve documents by collection name
+@app.route('/documents/<collection_name>', methods=['GET'])
+def get_documents_by_collection(collection_name):
+    try:
+        collection = db[collection_name]
+        documents = collection.find()
+        result = [{item: doc[item] for item in doc if item != '_id'} for doc in documents]
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Route to retrieve all documents from the collection
 @app.route('/documents', methods=['GET'])
 def get_documents():
     documents = db.mycollection.find()
     result = [{item: doc[item] for item in doc if item != '_id'} for doc in documents]
     return jsonify(result)
 
+# Route to upload a file
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
@@ -157,6 +195,7 @@ def upload_file():
 
     return jsonify({"message": "File uploaded successfully", "filename": filename}), 200
 
+# Route to process CSV files using our algorithm
 @app.route('/process', methods = ['GET'])
 def process_csv():
     try :

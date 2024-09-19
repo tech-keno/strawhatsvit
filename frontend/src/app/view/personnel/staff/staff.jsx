@@ -1,17 +1,29 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 
 export default function Staff() {
-    // Initial rows structure:  ID, Name, Units Taught
     const initialRows = [
         { id: 'person1', idNumber: 'S123', name: 'Jane Doe', unitsTaught: 'N/A' }
     ];
 
     const [gridRows, setGridRows] = useState(initialRows);
+    const [loading, setLoading] = useState(true);
 
-    // Function to handle changes in the table fields
+    useEffect(() => {
+        fetch('http://127.0.0.1:5000/documents/staff')
+            .then(response => response.json())
+            .then(data => {
+                setGridRows(data);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                setLoading(false);
+            });
+    }, []);
+
     const onFieldChange = (rowId, field, value) => {
         const updatedRows = gridRows.map(row =>
             row.id === rowId ? { ...row, [field]: value } : row
@@ -19,18 +31,18 @@ export default function Staff() {
         setGridRows(updatedRows);
     };
 
-    // Function to add a new row
     const addRow = () => {
         const newRow = {
-            id: `person${gridRows.length + 1}`,
+            id: `person${Date.now()}`, // Unique id based on timestamp
             idNumber: '',
             name: '',
             unitsTaught: ''
         };
         setGridRows([...gridRows, newRow]);
     };
+
     const saveData = () => {
-        fetch('http://127.0.0.1:5000/document', {
+        fetch('http://127.0.0.1:5000/document/staff', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -41,6 +53,10 @@ export default function Staff() {
         .then(data => {
             if (data.message) {
                 alert('Data saved successfully!');
+                // Optionally refresh data
+                fetch('http://127.0.0.1:5000/documents/staff')
+                    .then(response => response.json())
+                    .then(data => setGridRows(data));
             } else {
                 alert('Failed to save data');
             }
@@ -49,11 +65,10 @@ export default function Staff() {
             console.error('Error:', error);
         });
     };
-    
-    // Define columns for the DataTable component
+
     const columns = [
         {
-            name: 'ID',
+            name: 'ID Number',
             selector: row => row.idNumber,
             cell: row => (
                 <input
@@ -99,33 +114,38 @@ export default function Staff() {
                         +
                     </button>
                     <button 
-                    onClick={saveData}
+                        onClick={saveData}
                         className="px-4 py-2 bg-black text-white rounded shadow transition duration-200 ease-in-out transform hover:bg-gray-800 hover:scale-105 active:scale-95"
                     >
                         SAVE
                     </button>
                 </div>
             </div>
-            <DataTable
-                columns={columns}
-                data={gridRows}
-                noHeader
-                pagination
-                customStyles={{
-                    headRow: {
-                        style: {
-                            fontWeight: 'bold',
-                            fontSize: '16px',
-                            borderBottom: '2px solid #e5e7eb',
+
+            {loading ? (
+                <p>Loading...</p>
+            ) : (
+                <DataTable
+                    columns={columns}
+                    data={gridRows}
+                    noHeader
+                    pagination
+                    customStyles={{
+                        headRow: {
+                            style: {
+                                fontWeight: 'bold',
+                                fontSize: '16px',
+                                borderBottom: '2px solid #e5e7eb',
+                            },
                         },
-                    },
-                    cells: {
-                        style: {
-                            padding: '8px',
+                        cells: {
+                            style: {
+                                padding: '8px',
+                            },
                         },
-                    },
-                }}
-            />
+                    }}
+                />
+            )}
         </div>
     );
 }

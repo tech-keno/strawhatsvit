@@ -1,17 +1,25 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 
 export default function Courses() {
-    // Initial rows structure: Course Name, Students Enrolled, Subjects
-    const initialRows = [
-        { id: 'course1', courseName: 'Course A', studentsEnrolled: '50', subjects: '5' }
-    ];
+    const [gridRows, setGridRows] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const [gridRows, setGridRows] = useState(initialRows);
+    useEffect(() => {
+        fetch('http://127.0.0.1:5000/documents/courses')
+            .then(response => response.json())
+            .then(data => {
+                setGridRows(data);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                setLoading(false);
+            });
+    }, []);
 
-    // Function to handle changes in the table fields
     const onFieldChange = (rowId, field, value) => {
         const updatedRows = gridRows.map(row =>
             row.id === rowId ? { ...row, [field]: value } : row
@@ -19,18 +27,18 @@ export default function Courses() {
         setGridRows(updatedRows);
     };
 
-    // Function to add a new row
     const addRow = () => {
         const newRow = {
-            id: `course${gridRows.length + 1}`,
+            id: `course${Date.now()}`, // Unique id based on timestamp
             courseName: '',
             studentsEnrolled: '',
             subjects: ''
         };
         setGridRows([...gridRows, newRow]);
     };
+
     const saveData = () => {
-        fetch('http://127.0.0.1:5000/document', {
+        fetch('http://127.0.0.1:5000/document/courses', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -41,6 +49,10 @@ export default function Courses() {
         .then(data => {
             if (data.message) {
                 alert('Data saved successfully!');
+                // Optionally refresh data
+                fetch('http://127.0.0.1:5000/documents/courses')
+                    .then(response => response.json())
+                    .then(data => setGridRows(data));
             } else {
                 alert('Failed to save data');
             }
@@ -50,8 +62,6 @@ export default function Courses() {
         });
     };
 
-
-    // Define columns for the DataTable component
     const columns = [
         {
             name: 'Course Name',
@@ -107,26 +117,30 @@ export default function Courses() {
                     </button>
                 </div>
             </div>
-            <DataTable
-                columns={columns}
-                data={gridRows}
-                noHeader
-                pagination
-                customStyles={{
-                    headRow: {
-                        style: {
-                            fontWeight: 'bold',
-                            fontSize: '16px',
-                            borderBottom: '2px solid #e5e7eb',
+            {loading ? (
+                <p>Loading...</p>
+            ) : (
+                <DataTable
+                    columns={columns}
+                    data={gridRows}
+                    noHeader
+                    pagination
+                    customStyles={{
+                        headRow: {
+                            style: {
+                                fontWeight: 'bold',
+                                fontSize: '16px',
+                                borderBottom: '2px solid #e5e7eb',
+                            },
                         },
-                    },
-                    cells: {
-                        style: {
-                            padding: '8px',
+                        cells: {
+                            style: {
+                                padding: '8px',
+                            },
                         },
-                    },
-                }}
-            />
+                    }}
+                />
+            )}
         </div>
     );
 }

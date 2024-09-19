@@ -1,14 +1,25 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 
 export default function Buildings() {
-    const initialRows = [
-        { id: 'building1', name: 'Building A', capacity: '100', rooms: '10' }
-    ];
+    const [gridRows, setGridRows] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const [gridRows, setGridRows] = useState(initialRows);
+    useEffect(() => {
+        // Fetch data from the backend
+        fetch('http://127.0.0.1:5000/documents/building')
+            .then(response => response.json())
+            .then(data => {
+                setGridRows(data);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                setLoading(false);
+            });
+    }, []);
 
     const onFieldChange = (rowId, field, value) => {
         const updatedRows = gridRows.map(row =>
@@ -28,7 +39,7 @@ export default function Buildings() {
     };
 
     const saveData = () => {
-        fetch('http://127.0.0.1:5000/document', {
+        fetch('http://127.0.0.1:5000/document/building', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -96,7 +107,7 @@ export default function Buildings() {
                         +
                     </button>
                     <button 
-                        onClick={saveData} 
+                        onClick={saveData}
                         className="px-4 py-2 bg-black text-white rounded shadow transition duration-200 ease-in-out transform hover:bg-gray-800 hover:scale-105 active:scale-95"
                     >
                         SAVE
@@ -104,26 +115,30 @@ export default function Buildings() {
                 </div>
             </div>
 
-            <DataTable
-                columns={columns}
-                data={gridRows}
-                noHeader
-                pagination
-                customStyles={{
-                    headRow: {
-                        style: {
-                            fontWeight: 'bold',
-                            fontSize: '16px',
-                            borderBottom: '2px solid #e5e7eb',
+            {loading ? (
+                <p>Loading...</p>
+            ) : (
+                <DataTable
+                    columns={columns}
+                    data={gridRows}
+                    noHeader
+                    pagination
+                    customStyles={{
+                        headRow: {
+                            style: {
+                                fontWeight: 'bold',
+                                fontSize: '16px',
+                                borderBottom: '2px solid #e5e7eb',
+                            },
                         },
-                    },
-                    cells: {
-                        style: {
-                            padding: '8px',
+                        cells: {
+                            style: {
+                                padding: '8px',
+                            },
                         },
-                    },
-                }}
-            />
+                    }}
+                />
+            )}
         </div>
     );
 }
