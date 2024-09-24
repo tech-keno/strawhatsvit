@@ -9,7 +9,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 df1_path = os.path.join(current_dir, "uploads/Sample enrolment data.csv")
 df2_path = os.path.join(current_dir, "uploads/otherstuff.xlsx")
 
-# Load the data
+# Load the data and convert to required format
 def main():
     df1 = pd.read_csv(df1_path)
     df2 = pd.read_excel(df2_path)
@@ -25,7 +25,7 @@ def main():
 Create JSON Representation of a class eg. {MITS101: {length : -1, Lecturer: Jake...}, MITS102: }
 """ 
 def make_classes(df1, df2):
-    name_classes = {}
+
     student_names = df1["Student Name"].to_list()
     classes = df2["Unit"].to_list()
     times = df2["Time"].to_list()
@@ -74,6 +74,8 @@ def algo(df1, df2):
     for i in range(0, 60):
         for clas in clas_dict:   
             if clas_dict[clas]["length"] > 0 and clas not in removed_classes:
+                # For classes longer than period 1 they may be able to fit in one block, but not as a contiguous piece
+                # hence, they should not be added.
                 can_schedule = True
                 for period in range(clas_dict[clas]["length"]):
                     temp_set = clas_dict[clas]["students"] - timetable_dict[i + period][1]
@@ -114,7 +116,6 @@ def algo(df1, df2):
 """
 Converts a specific index to a time period, 8am-8pm
 """
-
 
 def convert_index_to_time(index):
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
