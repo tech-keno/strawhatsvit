@@ -33,7 +33,8 @@ export default function Buildings() {
             id: `building${gridRows.length + 1}`,
             name: '',
             capacity: '',
-            rooms: ''
+            rooms: '',
+            campus: ''
         };
         setGridRows([...gridRows, newRow]);
     };
@@ -90,6 +91,17 @@ export default function Buildings() {
                     type="text"
                     value={row.rooms}
                     onChange={e => onFieldChange(row.id, 'rooms', e.target.value)}
+                />
+            )
+        },
+        {
+            name: 'Campus',
+            selector: row => row.campus,
+            cell: row => (
+                <input
+                    type="text"
+                    value={row.campus}
+                    onChange={e => onFieldChange(row.id, 'campus', e.target.value)}
                 />
             )
         }

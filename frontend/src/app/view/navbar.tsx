@@ -7,9 +7,6 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import logo from './vit_logo_alt.png'
 
-// CSV file link
-const csvFilePath = './sample_enrolment.csv';
-
 export default function Navbar() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [csvData, setCsvData] = useState<string[][]>([]); // State to store CSV data
@@ -79,6 +76,8 @@ export default function Navbar() {
             
             {/* Display the CSV file name */}
             <p className="text-lg font-mono mt-4">sample_enrolment.csv</p>
+
+            
 
             {/* Placeholder for more information */}
             <p className="text-lg mt-4">More information to fill later</p>
