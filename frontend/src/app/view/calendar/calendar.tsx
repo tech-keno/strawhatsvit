@@ -30,8 +30,10 @@ export default function Calendar() {
         {name: "Purple", id: "#af8ee5"},
     ];
 
+    // create useState hook
     const [calendar, setCalendar] = useState<DayPilot.Calendar>();
 
+    // form created when trying to edit an event
     const editEvent = async (e: DayPilot.Event) => {
         const form = [
             {name: "Event text", id: "text", type: "text"},
@@ -45,6 +47,7 @@ export default function Calendar() {
         calendar?.events.update(e);
     };
 
+    // menu that pops up when clicking the little square on the top right of events
     const contextMenu = new DayPilot.Menu({
         items: [
             {
@@ -65,6 +68,7 @@ export default function Calendar() {
         ]
     });
 
+    // stuff done to events before rendering
     const onBeforeEventRender = (args: DayPilot.CalendarBeforeEventRenderArgs) => {
         args.data.areas = [
             {
@@ -72,7 +76,6 @@ export default function Calendar() {
                 right: 5,
                 width: 20,
                 height: 20,
-                symbol: "icons/daypilot.svg#minichevron-down-2",
                 fontColor: "#fff",
                 backColor: "#00000033",
                 style: "border-radius: 25%; cursor: pointer;",
@@ -82,6 +85,7 @@ export default function Calendar() {
         ];
     };
 
+    // configuration of calendar view
     const initialConfig: DayPilot.CalendarConfig = {
         viewType: "Week",
         durationBarVisible: false,
@@ -89,6 +93,7 @@ export default function Calendar() {
 
     const [config, setConfig] = useState(initialConfig);
 
+    // use effect hook manages changing 
     useEffect(() => {
         // const fetchDocuments = async () => {
         //     try {
@@ -119,8 +124,14 @@ export default function Calendar() {
         const startDate = "2024-10-01";
 
         calendar.update({startDate, events});
+
+        calendar.onEventMoved = (args) => {
+            console.log("Moved: " + args.e.text());
+          };
+
     }, [calendar]);
 
+    // when selecting a time range, creat new event (maybe remove)
     const onTimeRangeSelected = async (args: DayPilot.CalendarTimeRangeSelectedArgs) => {
         const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
         calendar?.clearSelection();
@@ -137,6 +148,8 @@ export default function Calendar() {
             }
         });
     };
+
+    
 
     return (
         <div>
