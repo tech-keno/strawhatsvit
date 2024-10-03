@@ -1,5 +1,6 @@
 import pandas as pd
 import os 
+import json
 
 # df1: given data from the client
 # df2: input take from the website
@@ -18,6 +19,7 @@ def main():
 
     excel_file = "output/magic4.xlsx"
     to_convert.to_excel(excel_file, index=False)
+    return rows
 
 
 
@@ -140,3 +142,5 @@ def convert_num_time(time):
     else:
         ret = "12:00 PM"
     return ret
+
+main()

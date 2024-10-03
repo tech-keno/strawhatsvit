@@ -90,6 +90,27 @@ export default function Calendar() {
     const [config, setConfig] = useState(initialConfig);
 
     useEffect(() => {
+        // const fetchDocuments = async () => {
+        //     try {
+        //         const response = await fetch('http://localhost:5000/get_classes', {
+        //             method: 'GET',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //             },
+        //         });
+        //         if (response.ok) {
+        //             const documents = await response.json();
+        //             console.log(documents);
+        //         } else {
+        //             console.error("Failed to fetch documents");
+        //         }
+        //     } catch (error) {
+        //         console.error("Error fetching documents:", error);
+        //     }
+        // };
+        
+        // fetchDocuments();
+
         if (!calendar || calendar?.disposed()) {
             return;
         }

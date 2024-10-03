@@ -199,12 +199,29 @@ def upload_file():
 @app.route('/process', methods = ['GET'])
 def process_csv():
     try :
-        main()
+        rows = main()
+        for row in rows:
+            result = db.classes.insert_one(row)  
         return jsonify({"message": "File uploaded successfully"}), 200
 
     except Exception as e:
         print(e)
         return jsonify({"error": "Invalid ID format"}), 400
+
+@app.route('/get_classes', methods=['GET'])
+def get_classes():
+    try:
+        documents = list(db.classes.find({}))
+        document_list = []
+        for doc in documents:
+            doc['_id'] = str(doc['_id'])  
+            document_list.append(doc)
+        
+        return jsonify(document_list), 200
+    
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "Failed to fetch documents"}), 500
 
     
 
