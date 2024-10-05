@@ -33,7 +33,7 @@ export default function Units() {
             unitName: '',
             prerequisites: '',
             studentsEnrolled: '',
-            periods: ''
+            timeHrs: ''  // Changed from periods to timeHrs
         };
         setGridRows([...gridRows, newRow]);
     };
@@ -98,13 +98,13 @@ export default function Units() {
             )
         },
         {
-            name: 'Periods',
-            selector: row => row.periods,
+            name: 'Time (Hrs)',  // Changed from Periods to Time (Hrs)
+            selector: row => row.timeHrs,
             cell: row => (
                 <input
                     type="text"
-                    value={row.periods}
-                    onChange={e => onFieldChange(row.id, 'periods', e.target.value)}
+                    value={row.timeHrs}
+                    onChange={e => onFieldChange(row.id, 'timeHrs', e.target.value)}
                 />
             )
         }

@@ -4,11 +4,7 @@ import React, { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 
 export default function Staff() {
-    const initialRows = [
-        { id: 'person1', idNumber: 'S123', name: 'Jane Doe', unitsTaught: 'N/A' }
-    ];
-
-    const [gridRows, setGridRows] = useState(initialRows);
+    const [gridRows, setGridRows] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -36,7 +32,8 @@ export default function Staff() {
             id: `person${Date.now()}`, // Unique id based on timestamp
             idNumber: '',
             name: '',
-            unitsTaught: ''
+            campus: '',  // Added Campus field
+            course: ''   // Changed from unitsTaught to course
         };
         setGridRows([...gridRows, newRow]);
     };
@@ -90,13 +87,24 @@ export default function Staff() {
             )
         },
         {
-            name: 'Units Taught',
-            selector: row => row.unitsTaught,
+            name: 'Campus',  // Added Campus column
+            selector: row => row.campus,
             cell: row => (
                 <input
                     type="text"
-                    value={row.unitsTaught}
-                    onChange={e => onFieldChange(row.id, 'unitsTaught', e.target.value)}
+                    value={row.campus}
+                    onChange={e => onFieldChange(row.id, 'campus', e.target.value)}
+                />
+            )
+        },
+        {
+            name: 'Course',  // Changed from Units Taught to Course
+            selector: row => row.course,
+            cell: row => (
+                <input
+                    type="text"
+                    value={row.course}
+                    onChange={e => onFieldChange(row.id, 'course', e.target.value)}
                 />
             )
         }
