@@ -33,7 +33,8 @@ export default function Staff() {
             idNumber: '',
             name: '',
             campus: '',  // Added Campus field
-            course: ''   // Changed from unitsTaught to course
+            course: '',   // Changed from unitsTaught to course
+            unitsCode: '' // New field for Units (Code)
         };
         setGridRows([...gridRows, newRow]);
     };
@@ -105,6 +106,17 @@ export default function Staff() {
                     type="text"
                     value={row.course}
                     onChange={e => onFieldChange(row.id, 'course', e.target.value)}
+                />
+            )
+        },
+        {
+            name: 'Units (Code)',  // New Units Code column
+            selector: row => row.unitsCode,
+            cell: row => (
+                <input
+                    type="text"
+                    value={row.unitsCode}
+                    onChange={e => onFieldChange(row.id, 'unitsCode', e.target.value)}
                 />
             )
         }
