@@ -32,7 +32,8 @@ export default function Students() {
             id: `person${Date.now()}`, // Unique id based on timestamp
             idNumber: '',
             name: '',
-            courseEnrolled: ''
+            courseEnrolled: '',
+            unitsCode: ''  // Added Units (Code) field
         };
         setGridRows([...gridRows, newRow]);
     };
@@ -93,6 +94,17 @@ export default function Students() {
                     type="text"
                     value={row.courseEnrolled}
                     onChange={e => onFieldChange(row.id, 'courseEnrolled', e.target.value)}
+                />
+            )
+        },
+        {
+            name: 'Units (Code)',  // New Units (Code) column
+            selector: row => row.unitsCode,
+            cell: row => (
+                <input
+                    type="text"
+                    value={row.unitsCode}
+                    onChange={e => onFieldChange(row.id, 'unitsCode', e.target.value)}
                 />
             )
         }
