@@ -127,10 +127,20 @@ def save_document(collection_name):
     if data:
         collection = db[collection_name]
         for item in data:
-            # Ensure each document has a unique 'id' field
-            collection.update_one({'id': item['id']}, {'$set': item}, upsert=True)
+
+            if 'id' not in item:
+                print("Missing 'id' in item:", item)
+                continue
+            # Perform update or upsert
+            result = collection.update_one({'id': item['id']}, {'$set': item}, upsert=True)
+            if result.matched_count == 0:
+                print(f"Document not found and upserted: {item['id']}")
+            else:
+                print(f"Document updated: {item['id']}")
+
         return jsonify({"message": "Data saved successfully!"}), 200
     return jsonify({"message": "No data received"}), 400
+
 
 
 
@@ -139,6 +149,18 @@ def save_document(collection_name):
 def delete_document(id):
     try:
         result = db.mycollection.delete_one({"_id": ObjectId(id)})
+        if result.deleted_count > 0:
+            return jsonify({"message": "Document deleted"})
+        else:
+            return jsonify({"error": "Document not found"}), 404
+    except:
+        return jsonify({"error": "Invalid ID format"}), 400
+
+# Route to delete a document by its ID
+@app.route('/document/<collection_name>/<id>', methods=['DELETE'])
+def delete_class_document(collection_name, id):
+    try:
+        result = db[collection_name].delete_one({"id": id})
         if result.deleted_count > 0:
             return jsonify({"message": "Document deleted"})
         else:
@@ -222,8 +244,14 @@ def get_classes():
     except Exception as e:
         print(e)
         return jsonify({"error": "Failed to fetch documents"}), 500
+"""
+@app.route('/collate_info', methods=['GET'])
+def collate_info():
+    names = ["units", "buildings", "students", "staff", "courses"]
+    for name in names:
+        collection = db[name]
+"""
 
-    
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)

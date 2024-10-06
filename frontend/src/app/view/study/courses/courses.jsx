@@ -37,6 +37,23 @@ export default function Courses() {
         setGridRows([...gridRows, newRow]);
     };
 
+    const deleteRow = (rowId) => {
+        console.log(rowId)
+        fetch(`http://127.0.0.1:5000/document/courses/${rowId}`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (response.ok) {
+                setGridRows(gridRows.filter(row => row.id !== rowId)); // Remove from frontend
+            } else {
+                alert('Failed to delete document');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    };
+
     const saveData = () => {
         fetch('http://127.0.0.1:5000/document/courses', {
             method: 'POST',
@@ -94,6 +111,17 @@ export default function Courses() {
                     value={row.subjects}
                     onChange={e => onFieldChange(row.id, 'subjects', e.target.value)}
                 />
+            )
+        },
+        {
+            name: 'Actions',
+            cell: row => (
+                <button
+                    onClick={() => deleteRow(row.id)}
+                    className="px-4 py-2 bg-red-500 text-white rounded shadow transition duration-200 ease-in-out transform hover:bg-red-600 hover:scale-105 active:scale-95"
+                >
+                    Delete
+                </button>
             )
         }
     ];
