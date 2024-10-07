@@ -5,7 +5,8 @@ import { DayPilot, DayPilotCalendar } from "@daypilot/daypilot-lite-react";
 
 type Event = {
     day: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
-    time: string
+    startTime: string
+    endTime: string
     unit: string
     lecturer: string
     deliveryMode: "online" | "in-person"
@@ -15,7 +16,8 @@ type Event = {
 const eventData: Event[] = [
     {
         day: "monday",
-        time: "8:00am to 10:00am",
+        startTime: "8:00am",
+        endTime:"10:00am",
         unit: "aaaaaaaaaaaaaaa",
         lecturer: "me",
         deliveryMode: "in-person",
@@ -40,13 +42,12 @@ function eventToDaypilotEvent(event: Event): DayPilot.EventData {
         "sunday": "2024-10-05T"
     }
 
-    const times = event.time.split(" ");
     return {
         tags: {event},
         id: 0,
         text: "",
-        start: `${dayToDateMap[event.day]}${timeToDaypilotTime(times[0])}`,
-        end: `${dayToDateMap[event.day]}${timeToDaypilotTime(times[2])}`
+        start: `${dayToDateMap[event.day]}${timeToDaypilotTime(event.startTime)}`,
+        end: `${dayToDateMap[event.day]}${timeToDaypilotTime(event.endTime)}`
     }
 }
 
@@ -112,20 +113,33 @@ export default function Calendar() {
         {name: "Purple", id: "#af8ee5"},
     ];
 
+    const deliveryMode = [
+        {name: "Online", id: "online"},
+        {name: "In Person", id: "in-person"}
+    ];
+
     // create useState hook
     const [calendar, setCalendar] = useState<DayPilot.Calendar>();
 
     // form created when trying to edit an event
     const editEvent = async (e: DayPilot.Event) => {
         const form = [
-            {name: "Event text", id: "text", type: "text"},
-            {name: "Event color", id: "backColor", type: "select", options: colors},
+            {name: "Unit", id: "unit", type: "text"},
+            {name: "Start Time", id: "startTime", timeInterval: 15, type: "time"},
+            {name: "End Time", id: "endTime", timeInterval: 15, type: "time"},
+            {name: "Lecturer", id: "lecturer", type: "text"},
+            {name: "Delivery Mode", id: "deliveryMode", type: "select"},
+            {name: "Classroom", id: "classroom", type: "text"},
         ];
 
-        const modal = await DayPilot.Modal.form(form, e.data);
+        const modal = await DayPilot.Modal.form(form, e.data.tags.event);
         if (modal.canceled) { return; }
-        e.data.text = modal.result.text;
-        e.data.backColor = modal.result.backColor;
+        e.data.tags.event.unit = modal.result.unit;
+        e.data.tags.event.startTime = modal.result.startTime;
+        e.data.tags.event.endTime = modal.result.endTime;
+        e.data.tags.event.lecturer = modal.result.lecturer;
+        e.data.tags.event.deliveryMode = modal.result.deliveryMode;
+        e.data.tags.event.classroom = modal.result.classroom;
         calendar?.events.update(e);
 
         // extracts all the event data from the calendar and prints to console
@@ -171,7 +185,7 @@ export default function Calendar() {
         args.data.html = `
         <div>
             <h1 style="font-size: 16px; text-decoration: underline;"> ${args.data.tags.event.unit} </h1>
-            <p> ${args.data.tags.event.time}</p>
+            <p> ${args.data.tags.event.startTime} to ${args.data.tags.event.endTime}</p>
             <p> ${args.data.tags.event.lecturer}</p>
             <p> ${args.data.tags.event.deliveryMode}: ${args.data.tags.event.classroom}</p>
         <div/>`
