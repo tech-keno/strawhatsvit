@@ -2,21 +2,80 @@
 
 import React, { useEffect, useState } from "react";
 import { DayPilot, DayPilotCalendar } from "@daypilot/daypilot-lite-react";
-import data from "./events.json";
+
+type Event = {
+    day: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
+    time: string
+    unit: string
+    lecturer: string
+    deliveryMode: "online" | "in-person"
+    classroom: string
+}
+
+const eventData: Event[] = [
+    {
+        day: "monday",
+        time: "8:00am to 10:00am",
+        unit: "aaaaaaaaaaaaaaa",
+        lecturer: "me",
+        deliveryMode: "in-person",
+        classroom: "13"
+    }
+] 
+
+/* Converts an object from the Event type to DayPilot.EventData type
+ * 
+ * event - The Event object to be converted
+ * 
+ * Returns a Daypilot.EventData object with a copy of the event object stored in its tags
+*/
+function daypilotEventConvert(event: Event): DayPilot.EventData {
+    const dayToDateMap: {[key: string] : string} = {
+        "monday": "2024-09-29T",
+        "tuesday": "2024-09-30T",
+        "wednesday": "2024-10-01T",
+        "thursday": "2024-10-02T",
+        "friday": "2024-10-03T",
+        "saturday": "2024-10-04T",
+        "sunday": "2024-10-05T"
+    }
+
+    const times = event.time.split(" ");
+    return {
+        tags: {event},
+        id: 0,
+        text: "",
+        start: `${dayToDateMap[event.day]}${daypilotTimeConvert(times[0])}`,
+        end: `${dayToDateMap[event.day]}${daypilotTimeConvert(times[2])}`
+    }
+}
+
+/* Converts a string of the form "8:00am" into a string of the form hh:mm:ss
+ * in 24 hour time
+ *
+ * time - String to be converted
+ * 
+ * Returns a string in the hh:mm:ss format
+*/
+function daypilotTimeConvert(time: string): string {
+    let [timePart, modifier] = time.match(/(\d{1,2}:\d{2})(am|pm)/i)?.slice(1) || [];
+
+    let [hours, minutes] = timePart.split(":").map(Number);
+
+    if (modifier === "pm" && hours < 12) {
+        hours += 12;
+    } else if (modifier === "am" && hours === 12) {
+        hours = 0;
+    }
+
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:00`;
+}
+
+function getCalendarEvents(events: DayPilot.Event[]): Event[] {
+    return events.map(e => e.data.tags.event);
+}
 
 export default function Calendar() {   
-
-    const styles = {
-        wrap: {
-            display: "flex"
-        },
-        left: {
-            marginRight: "10px"
-        },
-        main: {
-            flexGrow: "1"
-        }
-    };
 
     const colors = [
         {name: "Green", id: "#6aa84f"},
@@ -29,6 +88,8 @@ export default function Calendar() {
         {name: "Light Red", id: "#ff0000"},
         {name: "Purple", id: "#af8ee5"},
     ];
+
+    const [events, setEvents] = useState(eventData);
 
     // create useState hook
     const [calendar, setCalendar] = useState<DayPilot.Calendar>();
@@ -83,6 +144,7 @@ export default function Calendar() {
                 action: "ContextMenu",
             },
         ];
+        args.data.html = `<div>${args.data.tags.event.unit}<div/>`
     };
 
     // configuration of calendar view
@@ -119,7 +181,7 @@ export default function Calendar() {
         if (!calendar || calendar?.disposed()) {
             return;
         }
-        const events: DayPilot.EventData[] = data;
+        const events: DayPilot.EventData[] = eventData.map(e => daypilotEventConvert(e));
 
         const startDate = "2024-10-01";
 
@@ -148,7 +210,7 @@ export default function Calendar() {
             }
         });
     };
-
+    
     
 
     return (
