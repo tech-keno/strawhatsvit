@@ -244,13 +244,35 @@ def get_classes():
     except Exception as e:
         print(e)
         return jsonify({"error": "Failed to fetch documents"}), 500
-"""
+
 @app.route('/collate_info', methods=['GET'])
 def collate_info():
-    names = ["units", "buildings", "students", "staff", "courses"]
-    for name in names:
-        collection = db[name]
-"""
+    try:
+        names = ["units", "buildings", "students", "staff", "courses"]
+        unit_collection = db["units"]
+        unit_rows = []
+        documents = unit_collection.find()
+        
+        for doc in documents:
+            unit_name = doc.get("unitName", "Unknown Unit")
+            time_hrs = doc.get("timeHrs", "N/A")
+
+            unit_rows.append({
+                "Unit": unit_name,
+                "Time": time_hrs 
+            })
+        return jsonify(unit_rows)
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "Failed to fetch documents"}), 500
+    
+    
+    
+
+
+
+
+
 
 
 if __name__ == '__main__':
