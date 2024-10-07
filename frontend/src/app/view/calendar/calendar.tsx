@@ -170,7 +170,10 @@ export default function Calendar() {
         ];
         args.data.html = `
         <div>
-          ${args.data.tags.event.unit}
+            <h1 style="font-size: 16px; text-decoration: underline;"> ${args.data.tags.event.unit} </h1>
+            <p> ${args.data.tags.event.time}</p>
+            <p> ${args.data.tags.event.lecturer}</p>
+            <p> ${args.data.tags.event.deliveryMode}: ${args.data.tags.event.classroom}</p>
         <div/>`
     };
 
