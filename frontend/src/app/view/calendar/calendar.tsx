@@ -29,7 +29,7 @@ const eventData: Event[] = [
  * 
  * Returns a Daypilot.EventData object with a copy of the event object stored in its tags
 */
-function daypilotEventConvert(event: Event): DayPilot.EventData {
+function eventToDaypilotEvent(event: Event): DayPilot.EventData {
     const dayToDateMap: {[key: string] : string} = {
         "monday": "2024-09-29T",
         "tuesday": "2024-09-30T",
@@ -45,8 +45,8 @@ function daypilotEventConvert(event: Event): DayPilot.EventData {
         tags: {event},
         id: 0,
         text: "",
-        start: `${dayToDateMap[event.day]}${daypilotTimeConvert(times[0])}`,
-        end: `${dayToDateMap[event.day]}${daypilotTimeConvert(times[2])}`
+        start: `${dayToDateMap[event.day]}${timeToDaypilotTime(times[0])}`,
+        end: `${dayToDateMap[event.day]}${timeToDaypilotTime(times[2])}`
     }
 }
 
@@ -57,7 +57,7 @@ function daypilotEventConvert(event: Event): DayPilot.EventData {
  * 
  * Returns a string in the hh:mm:ss format
 */
-function daypilotTimeConvert(time: string): string {
+function timeToDaypilotTime(time: string): string {
     let [timePart, modifier] = time.match(/(\d{1,2}:\d{2})(am|pm)/i)?.slice(1) || [];
 
     let [hours, minutes] = timePart.split(":").map(Number);
@@ -71,8 +71,31 @@ function daypilotTimeConvert(time: string): string {
     return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:00`;
 }
 
-function getCalendarEvents(events: DayPilot.Event[]): Event[] {
-    return events.map(e => e.data.tags.event);
+/* Converts a string of the form hh:mm:ss into a string of the form "8:00"am
+ *
+ * time - String to be converted
+ * 
+ * Returns a string in the hh:mm:ss format
+*/
+function daypilotTimeToTime(date: DayPilot.Date): string {
+    let [hours, minutes] = date.toString().match(/(\d{2}:)/)?.slice(1).map(Number) || [];
+
+    let modifier = 'am';
+
+    if (hours >= 12) {
+        modifier = 'pm';
+        if (hours > 12) {
+            hours -= 12;
+        }
+    } else if (hours === 0) {
+        hours = 12;
+    }
+
+    return `${hours.toString()}:${minutes.toString().padStart(2, '0')}${modifier}`
+}
+
+function getCalendarEvents(events: DayPilot.EventData[]): Event[] {
+    return events.map(e => e.tags.event);
 }
 
 export default function Calendar() {   
@@ -89,8 +112,6 @@ export default function Calendar() {
         {name: "Purple", id: "#af8ee5"},
     ];
 
-    const [events, setEvents] = useState(eventData);
-
     // create useState hook
     const [calendar, setCalendar] = useState<DayPilot.Calendar>();
 
@@ -106,6 +127,9 @@ export default function Calendar() {
         e.data.text = modal.result.text;
         e.data.backColor = modal.result.backColor;
         calendar?.events.update(e);
+
+        // extracts all the event data from the calendar and prints to console
+        console.log(calendar?.events.list.map(e => e.tags.event))
     };
 
     // menu that pops up when clicking the little square on the top right of events
@@ -144,7 +168,10 @@ export default function Calendar() {
                 action: "ContextMenu",
             },
         ];
-        args.data.html = `<div>${args.data.tags.event.unit}<div/>`
+        args.data.html = `
+        <div>
+          ${args.data.tags.event.unit}
+        <div/>`
     };
 
     // configuration of calendar view
@@ -181,7 +208,7 @@ export default function Calendar() {
         if (!calendar || calendar?.disposed()) {
             return;
         }
-        const events: DayPilot.EventData[] = eventData.map(e => daypilotEventConvert(e));
+        const events: DayPilot.EventData[] = eventData.map(e => eventToDaypilotEvent(e));
 
         const startDate = "2024-10-01";
 
