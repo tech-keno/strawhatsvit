@@ -31,6 +31,7 @@ export default function Units() {
         const newRow = {
             id: `unit${Date.now()}`, // Unique id based on timestamp
             unitName: '',
+            deliveryMethod: '',
             prerequisites: '',
             studentsEnrolled: '',
             timeHrs: ''  // Changed from periods to timeHrs
@@ -72,6 +73,17 @@ export default function Units() {
                     type="text"
                     value={row.unitName}
                     onChange={e => onFieldChange(row.id, 'unitName', e.target.value)}
+                />
+            )
+        },
+        {
+            name: 'Delivery Method',
+            selector: row => row.deliveryMethod,
+            cell: row => (
+                <input
+                    type="text"
+                    value={row.deliveryMethod}
+                    onChange={e => onFieldChange(row.id, 'deliveryMethod', e.target.value)}
                 />
             )
         },
