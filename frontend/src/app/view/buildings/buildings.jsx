@@ -6,13 +6,20 @@ import DataTable from 'react-data-table-component';
 export default function Buildings() {
     const [gridRows, setGridRows] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [newRoom, setNewRoom] = useState(''); // For new room input
+    const [isRoomPopupOpen, setIsRoomPopupOpen] = useState(false); // To toggle popup
+    const [selectedRowId, setSelectedRowId] = useState(null); // To know which row's rooms are being added
 
     useEffect(() => {
         // Fetch data from the backend
         fetch('http://127.0.0.1:5000/documents/building')
             .then(response => response.json())
             .then(data => {
-                setGridRows(data);
+                const updatedData = data.map(item => ({
+                    ...item,
+                    rooms: Array.isArray(item.rooms) ? item.rooms : item.rooms.split(', ') // Ensure rooms is an array
+                }));
+                setGridRows(updatedData);
                 setLoading(false);
             })
             .catch(error => {
@@ -28,21 +35,18 @@ export default function Buildings() {
         setGridRows(updatedRows);
     };
 
-    
-
     const addRow = () => {
         const newRow = {
             id: `building${gridRows.length + 1}`,
             name: '',
             capacity: '',
-            rooms: '',
+            rooms: [], // Initialize rooms as an empty array
             campus: ''
         };
         setGridRows([...gridRows, newRow]);
     };
 
     const deleteRow = (rowId) => {
-        console.log(rowId)
         fetch(`http://127.0.0.1:5000/document/building/${rowId}`, {
             method: 'DELETE',
         })
@@ -59,12 +63,17 @@ export default function Buildings() {
     };
 
     const saveData = () => {
+        const updatedGridRows = gridRows.map(row => ({
+            ...row,
+            rooms: Array.isArray(row.rooms) ? row.rooms : row.rooms.split(', ') // Ensure rooms are saved as an array
+        }));
+
         fetch('http://127.0.0.1:5000/document/building', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(gridRows),
+            body: JSON.stringify(updatedGridRows),
         })
         .then(response => response.json())
         .then(data => {
@@ -77,6 +86,41 @@ export default function Buildings() {
         .catch(error => {
             console.error('Error:', error);
         });
+    };
+
+    // Function to handle room addition for a specific row
+    const handleAddRoom = () => {
+        if (newRoom.trim() === '') {
+            alert('Room name cannot be empty.');
+            return;
+        }
+
+        const updatedRows = gridRows.map(row => {
+            if (row.id === selectedRowId) {
+                return {
+                    ...row,
+                    rooms: [...row.rooms, newRoom] // Add new room to the specific row's rooms array
+                };
+            }
+            return row;
+        });
+
+        setGridRows(updatedRows);
+        setNewRoom(''); // Clear the input field
+        setIsRoomPopupOpen(false); // Close the popup
+    };
+
+    // Function to remove a room
+    const handleRemoveRoom = (rowId, roomIndex) => {
+        const updatedRows = gridRows.map(row => {
+            if (row.id === rowId) {
+                const updatedRooms = row.rooms.filter((_, i) => i !== roomIndex);
+                return { ...row, rooms: updatedRooms };
+            }
+            return row;
+        });
+
+        setGridRows(updatedRows);
     };
 
     const columns = [
@@ -106,11 +150,32 @@ export default function Buildings() {
             name: 'Rooms',
             selector: row => row.rooms,
             cell: row => (
-                <input
-                    type="text"
-                    value={row.rooms}
-                    onChange={e => onFieldChange(row.id, 'rooms', e.target.value)}
-                />
+                <div>
+                    {Array.isArray(row.rooms) && row.rooms.length > 0 ? (
+                        row.rooms.map((room, index) => (
+                            <span key={index} className="room-item">
+                                {room}
+                                <button 
+                                    onClick={() => handleRemoveRoom(row.id, index)} 
+                                    className="ml-2 text-red-500"
+                                >
+                                    x
+                                </button>
+                            </span>
+                        ))
+                    ) : (
+                        <span>No rooms added</span>
+                    )}
+                    <button
+                        onClick={() => {
+                            setSelectedRowId(row.id);
+                            setIsRoomPopupOpen(true);
+                        }} 
+                        className="ml-2 text-blue-500"
+                    >
+                        Add Room
+                    </button>
+                </div>
             )
         },
         {
@@ -180,6 +245,26 @@ export default function Buildings() {
                         },
                     }}
                 />
+            )}
+
+            {/* Room Popup */}
+            {isRoomPopupOpen && (
+                <div className="popup">
+                    <div className="popup-inner">
+                        <h3>Add Room</h3>
+                        <input 
+                            type="text" 
+                            value={newRoom}
+                            onChange={e => setNewRoom(e.target.value)}
+                            placeholder="Enter room name"
+                            className="border p-2"
+                        />
+                        <div className="mt-4">
+                            <button onClick={handleAddRoom} className="px-4 py-2 bg-blue-500 text-white rounded shadow">Add</button>
+                            <button onClick={() => setIsRoomPopupOpen(false)} className="ml-2 px-4 py-2 bg-gray-500 text-white rounded shadow">Cancel</button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
