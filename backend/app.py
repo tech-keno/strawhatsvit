@@ -245,10 +245,26 @@ def get_classes():
         print(e)
         return jsonify({"error": "Failed to fetch documents"}), 500
 
+def get_lecturer():
+    staff_collection = db["staff"]
+    documents = staff_collection.find()
+    
+    return_dict = {}
+    for doc in documents:
+        lecturer = doc.get("name")
+        units_teach = doc.get("unitsCode").split(",")
+        if lecturer not in return_dict:
+            return_dict[lecturer] = units_teach
+        else:
+            return_dict[lecturer] = return_dict[lecturer] + units_teach
+
+    return return_dict
+
 @app.route('/collate_info', methods=['GET'])
 def collate_info():
     try:
-        names = ["units", "buildings", "students", "staff", "courses"]
+        db_names = ["units", "buildings", "students", "staff", "courses"]
+        
         unit_collection = db["units"]
         unit_rows = []
         documents = unit_collection.find()
@@ -256,17 +272,34 @@ def collate_info():
         for doc in documents:
             unit_name = doc.get("unitName", "Unknown Unit")
             time_hrs = doc.get("timeHrs", "N/A")
-
             unit_rows.append({
                 "Unit": unit_name,
                 "Time": time_hrs 
             })
+        
+        buildings_collection = db["building"]
+        documents = buildings_collection.find()
+        
+        print(get_lecturer())
+
+        classrooms = []
+        for doc in documents:
+            rooms = doc.get("rooms", [])
+            classrooms.extend(rooms)
+        
+        for row in unit_rows:
+            if classrooms:  # Check if there are still rooms available
+                row["classroom"] = classrooms.pop()
+            else:
+                row["classroom"] = "No classroom available"
+
+        
         return jsonify(unit_rows)
+    
     except Exception as e:
         print(e)
         return jsonify({"error": "Failed to fetch documents"}), 500
-    
-    
+
     
 
 
