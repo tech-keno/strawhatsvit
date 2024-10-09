@@ -9,6 +9,7 @@ import pathlib
 import pandas as pd
 from dotenv import load_dotenv
 from algo import main
+import csv
 
 app = Flask(__name__)
 
@@ -288,13 +289,22 @@ def collate_info():
             classrooms.extend(rooms)
         
         for row in unit_rows:
-            if classrooms:  # Check if there are still rooms available
+            if classrooms: 
                 row["classroom"] = classrooms.pop()
             else:
                 row["classroom"] = "No classroom available"
 
+
+        csv_filename = "collated_info.csv"
+        csv_path = os.path.join("output", csv_filename)  
+
+        with open(csv_path, mode='w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=["Unit", "Time", "classroom"])
+            writer.writeheader()
+            writer.writerows(unit_rows)
         
         return jsonify(unit_rows)
+        
     
     except Exception as e:
         print(e)
