@@ -4,10 +4,30 @@ import React, { useState } from 'react';
 
 export default function Home() {
   const [hasCalendar, setHasCalendar] = useState(false);
-
-  const createCalendar = () => setHasCalendar(true);
   const uploadFile = () => {
     // do stuff
+  };
+  
+  const createCalendar = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:5000/collate_info', {
+        method: 'GET',
+        credentials: 'include', 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Collated Info:', data);
+        
+        setHasCalendar(true);
+      } else {
+        console.error('Error fetching collated info:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+    }
   };
 
   return (
