@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { DayPilot, DayPilotCalendar } from "@daypilot/daypilot-lite-react";
 
+// Event object containing information for an event, stored in tags of it
 type Event = {
     day: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
     startTime: string
@@ -11,8 +12,10 @@ type Event = {
     lecturer: string
     deliveryMode: "online" | "in-person"
     classroom: string
+    course: string
 }
 
+// example of an event object
 const eventData: Event[] = [
     {
         day: "monday",
@@ -21,7 +24,8 @@ const eventData: Event[] = [
         unit: "aaaaaaaaaaaaaaa",
         lecturer: "me",
         deliveryMode: "in-person",
-        classroom: "13"
+        classroom: "13",
+        course: "SMDE"
     }
 ] 
 
@@ -33,11 +37,16 @@ const eventData: Event[] = [
 */
 function eventToDaypilotEvent(event: Event): DayPilot.EventData {
     return {
-        tags: {event},
+        tags: {
+            event,
+        }, 
         id: 0,
         text: "",
         start: timeToDaypilotTime(event.startTime, event.day),
-        end: timeToDaypilotTime(event.endTime, event.day)
+        end: timeToDaypilotTime(event.endTime, event.day),
+        // default color
+        backColor: "#3d85c6"
+
     }
 }
 
@@ -90,6 +99,7 @@ export default function Calendar() {
 
     // form created when trying to edit an event
     const editEvent = async (e: DayPilot.Event) => {
+        // each line corresponds to a form entry line
         const form = [
             {name: "Unit", id: "unit", type: "text"},
             {name: "Start Time", id: "startTime", timeInterval: 15, type: "time"},
@@ -97,8 +107,10 @@ export default function Calendar() {
             {name: "Lecturer", id: "lecturer", type: "text"},
             {name: "Delivery Mode", id: "deliveryMode", type: "select", options: deliveryMode},
             {name: "Classroom", id: "classroom", type: "text"},
+            {name: "Color", id: "color", type: "select", options: colors}
         ];
 
+        // update information based on form
         const modal = await DayPilot.Modal.form(form, e.data.tags.event);
         if (modal.canceled) { return; }
         e.data.tags.event.unit = modal.result.unit;
@@ -109,7 +121,9 @@ export default function Calendar() {
         e.data.tags.event.lecturer = modal.result.lecturer;
         e.data.tags.event.deliveryMode = modal.result.deliveryMode;
         e.data.tags.event.classroom = modal.result.classroom;
+        e.data.backColor = modal.result.color;
         calendar?.events.update(e);
+        
 
         // extracts all the event data from the calendar and prints to console
         console.log(calendar?.events.list.map(e => e.tags.event))
@@ -200,15 +214,18 @@ export default function Calendar() {
 
         calendar.update({startDate, events});
 
+        // update tag information when an event is moved
         calendar.onEventMoved = (args) => {
             console.log("Moved: " + args.e.text());
+            // args.e.data.tags.event.startTime = GOODLUCKSAM(args.e.start);
+            // args.e.data.tags.event.endTime = GOODLUCKSAM(args.e.end);
           };
 
     }, [calendar]);
 
     // when selecting a time range, creat new event (maybe remove)
     const onTimeRangeSelected = async (args: DayPilot.CalendarTimeRangeSelectedArgs) => {
-        const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
+        const modal = await DayPilot.Modal.prompt("Create a new event:", "New Class");
         calendar?.clearSelection();
         if (modal.canceled) {
             return;

@@ -10,6 +10,7 @@ export default function Home() {
     // do stuff
   };
 
+
   return (
     <div>
       {hasCalendar ? (
