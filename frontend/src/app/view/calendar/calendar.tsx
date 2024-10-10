@@ -16,8 +16,8 @@ type Event = {
 const eventData: Event[] = [
     {
         day: "monday",
-        startTime: "8:00am",
-        endTime:"10:00am",
+        startTime: "08:00",
+        endTime:"10:00",
         unit: "aaaaaaaaaaaaaaa",
         lecturer: "me",
         deliveryMode: "in-person",
@@ -32,22 +32,12 @@ const eventData: Event[] = [
  * Returns a Daypilot.EventData object with a copy of the event object stored in its tags
 */
 function eventToDaypilotEvent(event: Event): DayPilot.EventData {
-    const dayToDateMap: {[key: string] : string} = {
-        "monday": "2024-09-29T",
-        "tuesday": "2024-09-30T",
-        "wednesday": "2024-10-01T",
-        "thursday": "2024-10-02T",
-        "friday": "2024-10-03T",
-        "saturday": "2024-10-04T",
-        "sunday": "2024-10-05T"
-    }
-
     return {
         tags: {event},
         id: 0,
         text: "",
-        start: `${dayToDateMap[event.day]}${timeToDaypilotTime(event.startTime)}`,
-        end: `${dayToDateMap[event.day]}${timeToDaypilotTime(event.endTime)}`
+        start: timeToDaypilotTime(event.startTime, event.day),
+        end: timeToDaypilotTime(event.endTime, event.day)
     }
 }
 
@@ -58,41 +48,18 @@ function eventToDaypilotEvent(event: Event): DayPilot.EventData {
  * 
  * Returns a string in the hh:mm:ss format
 */
-function timeToDaypilotTime(time: string): string {
-    let [timePart, modifier] = time.match(/(\d{1,2}:\d{2})(am|pm)/i)?.slice(1) || [];
-
-    let [hours, minutes] = timePart.split(":").map(Number);
-
-    if (modifier === "pm" && hours < 12) {
-        hours += 12;
-    } else if (modifier === "am" && hours === 12) {
-        hours = 0;
+function timeToDaypilotTime(time: string, day: string): string {
+    const dayToDateMap: {[key: string] : string} = {
+        "monday": "2024-09-29T",
+        "tuesday": "2024-09-30T",
+        "wednesday": "2024-10-01T",
+        "thursday": "2024-10-02T",
+        "friday": "2024-10-03T",
+        "saturday": "2024-10-04T",
+        "sunday": "2024-10-05T"
     }
 
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:00`;
-}
-
-/* Converts a string of the form hh:mm:ss into a string of the form "8:00"am
- *
- * time - String to be converted
- * 
- * Returns a string in the hh:mm:ss format
-*/
-function daypilotTimeToTime(date: DayPilot.Date): string {
-    let [hours, minutes] = date.toString().match(/(\d{2}:)/)?.slice(1).map(Number) || [];
-
-    let modifier = 'am';
-
-    if (hours >= 12) {
-        modifier = 'pm';
-        if (hours > 12) {
-            hours -= 12;
-        }
-    } else if (hours === 0) {
-        hours = 12;
-    }
-
-    return `${hours.toString()}:${minutes.toString().padStart(2, '0')}${modifier}`
+    return `${dayToDateMap[day]}${time}:00`
 }
 
 function getCalendarEvents(events: DayPilot.EventData[]): Event[] {
@@ -128,7 +95,7 @@ export default function Calendar() {
             {name: "Start Time", id: "startTime", timeInterval: 15, type: "time"},
             {name: "End Time", id: "endTime", timeInterval: 15, type: "time"},
             {name: "Lecturer", id: "lecturer", type: "text"},
-            {name: "Delivery Mode", id: "deliveryMode", type: "select"},
+            {name: "Delivery Mode", id: "deliveryMode", type: "select", options: deliveryMode},
             {name: "Classroom", id: "classroom", type: "text"},
         ];
 
@@ -136,7 +103,9 @@ export default function Calendar() {
         if (modal.canceled) { return; }
         e.data.tags.event.unit = modal.result.unit;
         e.data.tags.event.startTime = modal.result.startTime;
+        e.data.start = timeToDaypilotTime(modal.result.startTime, e.data.tags.event.day);
         e.data.tags.event.endTime = modal.result.endTime;
+        e.data.end = timeToDaypilotTime(modal.result.endTime, e.data.tags.event.day);
         e.data.tags.event.lecturer = modal.result.lecturer;
         e.data.tags.event.deliveryMode = modal.result.deliveryMode;
         e.data.tags.event.classroom = modal.result.classroom;
