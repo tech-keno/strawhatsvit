@@ -6,18 +6,17 @@ import DataTable from 'react-data-table-component';
 export default function Buildings() {
     const [gridRows, setGridRows] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [newRoom, setNewRoom] = useState(''); // For new room input
-    const [isRoomPopupOpen, setIsRoomPopupOpen] = useState(false); // To toggle popup
-    const [selectedRowId, setSelectedRowId] = useState(null); // To know which row's rooms are being added
+    const [newRoom, setNewRoom] = useState('');
+    const [isRoomPopupOpen, setIsRoomPopupOpen] = useState(false);
+    const [selectedRowId, setSelectedRowId] = useState(null);
 
     useEffect(() => {
-        // Fetch data from the backend
         fetch('http://127.0.0.1:5000/documents/building')
             .then(response => response.json())
             .then(data => {
                 const updatedData = data.map(item => ({
                     ...item,
-                    rooms: Array.isArray(item.rooms) ? item.rooms : item.rooms.split(', ') // Ensure rooms is an array
+                    rooms: Array.isArray(item.rooms) ? item.rooms : item.rooms.split(', ') 
                 }));
                 setGridRows(updatedData);
                 setLoading(false);
@@ -40,7 +39,7 @@ export default function Buildings() {
             id: `building${gridRows.length + 1}`,
             name: '',
             capacity: '',
-            rooms: [], // Initialize rooms as an empty array
+            rooms: [], 
             campus: ''
         };
         setGridRows([...gridRows, newRow]);
@@ -52,7 +51,7 @@ export default function Buildings() {
         })
         .then(response => {
             if (response.ok) {
-                setGridRows(gridRows.filter(row => row.id !== rowId)); // Remove from frontend
+                setGridRows(gridRows.filter(row => row.id !== rowId));
             } else {
                 alert('Failed to delete document');
             }
@@ -65,7 +64,7 @@ export default function Buildings() {
     const saveData = () => {
         const updatedGridRows = gridRows.map(row => ({
             ...row,
-            rooms: Array.isArray(row.rooms) ? row.rooms : row.rooms.split(', ') // Ensure rooms are saved as an array
+            rooms: Array.isArray(row.rooms) ? row.rooms : row.rooms.split(', ')
         }));
 
         fetch('http://127.0.0.1:5000/document/building', {
@@ -88,8 +87,7 @@ export default function Buildings() {
         });
     };
 
-    // Function to handle room addition for a specific row
-    const handleAddRoom = () => {
+    const handleAddSubItem = () => {
         if (newRoom.trim() === '') {
             alert('Room name cannot be empty.');
             return;
@@ -99,19 +97,18 @@ export default function Buildings() {
             if (row.id === selectedRowId) {
                 return {
                     ...row,
-                    rooms: [...row.rooms, newRoom] // Add new room to the specific row's rooms array
+                    rooms: [...row.rooms, newRoom]
                 };
             }
             return row;
         });
 
         setGridRows(updatedRows);
-        setNewRoom(''); // Clear the input field
-        setIsRoomPopupOpen(false); // Close the popup
+        setNewRoom('');
+        setIsRoomPopupOpen(false);
     };
 
-    // Function to remove a room
-    const handleRemoveRoom = (rowId, roomIndex) => {
+    const handleRemoveSubItem = (rowId, roomIndex) => {
         const updatedRows = gridRows.map(row => {
             if (row.id === rowId) {
                 const updatedRooms = row.rooms.filter((_, i) => i !== roomIndex);
@@ -152,29 +149,33 @@ export default function Buildings() {
             cell: row => (
                 <div>
                     {Array.isArray(row.rooms) && row.rooms.length > 0 ? (
-                        row.rooms.map((room, index) => (
-                            <span key={index} className="room-item">
-                                {room}
-                                <button 
-                                    onClick={() => handleRemoveRoom(row.id, index)} 
-                                    className="ml-2 text-red-500"
-                                >
-                                    x
-                                </button>
-                            </span>
-                        ))
+                        <div className="grid grid-cols-2 gap-4"> 
+                            {row.rooms.map((room, index) => (
+                                <span key={index} className="room-item flex items-center">
+                                    {room}
+                                    <button
+                                        onClick={() => handleRemoveSubItem(row.id, index)}
+                                        className="ml-2 text-red-500"
+                                    >
+                                        x
+                                    </button>
+                                </span>
+                            ))}
+                        </div>
                     ) : (
                         <span>No rooms added</span>
                     )}
-                    <button
-                        onClick={() => {
-                            setSelectedRowId(row.id);
-                            setIsRoomPopupOpen(true);
-                        }} 
-                        className="ml-2 text-blue-500"
-                    >
-                        Add Room
-                    </button>
+                    <div className="mt-4">
+                        <button
+                            onClick={() => {
+                                setSelectedRowId(row.id);
+                                setIsRoomPopupOpen(true);
+                            }} 
+                            className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+                        >
+                            Add Room
+                        </button>
+                    </div>
                 </div>
             )
         },
@@ -230,39 +231,33 @@ export default function Buildings() {
                     data={gridRows}
                     noHeader
                     pagination
-                    customStyles={{
-                        headRow: {
-                            style: {
-                                fontWeight: 'bold',
-                                fontSize: '16px',
-                                borderBottom: '2px solid #e5e7eb',
-                            },
-                        },
-                        cells: {
-                            style: {
-                                padding: '8px',
-                            },
-                        },
-                    }}
                 />
             )}
 
-            {/* Room Popup */}
+            {/* Popup Window */}
             {isRoomPopupOpen && (
-                <div className="popup">
-                    <div className="popup-inner">
-                        <h3>Add Room</h3>
-                        <input 
-                            type="text" 
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded shadow-lg max-w-md max-h-[80vh] overflow-y-auto z-60">
+                        <h2 className="text-2xl font-bold mb-4">Add New Room</h2>
+                        <input
+                            type="text"
                             value={newRoom}
-                            onChange={e => setNewRoom(e.target.value)}
+                            onChange={(e) => setNewRoom(e.target.value)}
+                            className="w-full p-2 mb-4 border border-gray-300 rounded"
                             placeholder="Enter room name"
-                            className="border p-2"
                         />
-                        <div className="mt-4">
-                            <button onClick={handleAddRoom} className="px-4 py-2 bg-blue-500 text-white rounded shadow">Add</button>
-                            <button onClick={() => setIsRoomPopupOpen(false)} className="ml-2 px-4 py-2 bg-gray-500 text-white rounded shadow">Cancel</button>
-                        </div>
+                        <button
+                            onClick={handleAddSubItem}
+                            className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+                        >
+                            Add
+                        </button>
+                        <button
+                            onClick={() => setIsRoomPopupOpen(false)}
+                            className="mt-2 bg-gray-300 text-black px-4 py-2 rounded"
+                        >
+                            Cancel
+                        </button>
                     </div>
                 </div>
             )}
