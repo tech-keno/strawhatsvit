@@ -149,7 +149,7 @@ export default function Buildings() {
             cell: row => (
                 <div>
                     {Array.isArray(row.rooms) && row.rooms.length > 0 ? (
-                        <div className="grid grid-cols-2 gap-4"> 
+                        <div className="grid grid-cols-2 gap-2">  {/* Adjusted gap for sub-items */}
                             {row.rooms.map((room, index) => (
                                 <span key={index} className="room-item flex items-center">
                                     {room}
@@ -165,19 +165,19 @@ export default function Buildings() {
                     ) : (
                         <span>No rooms added</span>
                     )}
-                    <div className="mt-4">
+                    <div className="mt-2"> {/* Reduced vertical spacing */}
                         <button
                             onClick={() => {
                                 setSelectedRowId(row.id);
                                 setIsRoomPopupOpen(true);
                             }} 
-                            className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+                            className="bg-blue-500 text-white px-4 py-2 rounded mt-1"
                         >
                             Add Room
                         </button>
                     </div>
                 </div>
-            )
+            ),
         },
         {
             name: 'Campus',
@@ -231,6 +231,20 @@ export default function Buildings() {
                     data={gridRows}
                     noHeader
                     pagination
+                    customStyles={{
+                        headRow: {
+                            style: {
+                                fontWeight: 'bold',
+                                fontSize: '16px',
+                                borderBottom: '2px solid #e5e7eb',
+                            },
+                        },
+                        cells: {
+                            style: {
+                                padding: '8px',
+                            },
+                        },
+                    }}
                 />
             )}
 
@@ -246,18 +260,20 @@ export default function Buildings() {
                             className="w-full p-2 mb-4 border border-gray-300 rounded"
                             placeholder="Enter room name"
                         />
-                        <button
-                            onClick={handleAddSubItem}
-                            className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
-                        >
-                            Add
-                        </button>
-                        <button
-                            onClick={() => setIsRoomPopupOpen(false)}
-                            className="mt-2 bg-gray-300 text-black px-4 py-2 rounded"
-                        >
-                            Cancel
-                        </button>
+                        <div className="flex justify-end space-x-2">
+                            <button
+                                onClick={handleAddSubItem}
+                                className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+                            >
+                                Add
+                            </button>
+                            <button
+                                onClick={() => setIsRoomPopupOpen(false)}
+                                className="bg-gray-300 text-black px-4 py-2 rounded"
+                            >
+                                Cancel
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
