@@ -23,6 +23,12 @@ const eventData: Event[] = [
     }
 ] 
 
+
+function addEvent(newEvent: Event): void {
+    eventData.push(newEvent);
+}
+
+
 /* Converts an object from the Event type to DayPilot.EventData type
  * 
  * event - The Event object to be converted
