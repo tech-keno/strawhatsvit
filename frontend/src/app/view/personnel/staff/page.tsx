@@ -1,10 +1,9 @@
-import Login from "./login"
+import Staff from './staff.jsx'
 
 export default function Home() {
     return (
         <div>
-            {/* <p>login</p> */}
-            <Login/>
+            <Staff/>
         </div>
     )
   }

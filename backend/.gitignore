@@ -1,6 +1,8 @@
 /.history/
-/uploads/
+
 /__pycache__/
+/flask_session
 
 test.py
 .env
+/py_envs
