@@ -6,12 +6,20 @@ import DataTable from 'react-data-table-component';
 export default function Staff() {
     const [gridRows, setGridRows] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [newUnit, setNewUnit] = useState('');
+    const [isUnitPopupOpen, setIsUnitPopupOpen] = useState(false);
+    const [selectedRowId, setSelectedRowId] = useState(null);
 
     useEffect(() => {
         fetch('http://127.0.0.1:5000/documents/staff')
             .then(response => response.json())
             .then(data => {
-                setGridRows(data);
+                // Ensure unitsCode is initialized as an array
+                const updatedData = data.map(item => ({
+                    ...item,
+                    unitsCode: Array.isArray(item.unitsCode) ? item.unitsCode : [],
+                }));
+                setGridRows(updatedData);
                 setLoading(false);
             })
             .catch(error => {
@@ -32,15 +40,14 @@ export default function Staff() {
             id: `person${Date.now()}`, // Unique id based on timestamp
             idNumber: '',
             name: '',
-            campus: '',  // Added Campus field
-            course: '',   // Changed from unitsTaught to course
-            unitsCode: '' // New field for Units (Code)
+            campus: '',
+            course: '',
+            unitsCode: [],
         };
         setGridRows([...gridRows, newRow]);
     };
 
     const deleteRow = (rowId) => {
-        console.log(rowId)
         fetch(`http://127.0.0.1:5000/document/staff/${rowId}`, {
             method: 'DELETE',
         })
@@ -55,7 +62,6 @@ export default function Staff() {
             console.error('Error:', error);
         });
     };
-
 
     const saveData = () => {
         fetch('http://127.0.0.1:5000/document/staff', {
@@ -72,7 +78,13 @@ export default function Staff() {
                 // Optionally refresh data
                 fetch('http://127.0.0.1:5000/documents/staff')
                     .then(response => response.json())
-                    .then(data => setGridRows(data));
+                    .then(data => {
+                        const updatedData = data.map(item => ({
+                            ...item,
+                            unitsCode: Array.isArray(item.unitsCode) ? item.unitsCode : [],
+                        }));
+                        setGridRows(updatedData);
+                    });
             } else {
                 alert('Failed to save data');
             }
@@ -80,6 +92,39 @@ export default function Staff() {
         .catch(error => {
             console.error('Error:', error);
         });
+    };
+
+    const handleAddUnit = () => {
+        if (newUnit.trim() === '') {
+            alert('Unit name cannot be empty.');
+            return;
+        }
+
+        const updatedRows = gridRows.map(row => {
+            if (row.id === selectedRowId) {
+                return {
+                    ...row,
+                    unitsCode: [...(row.unitsCode || []), newUnit],
+                };
+            }
+            return row;
+        });
+
+        setGridRows(updatedRows);
+        setNewUnit('');
+        setIsUnitPopupOpen(false);
+    };
+
+    const handleRemoveUnit = (rowId, unitIndex) => {
+        const updatedRows = gridRows.map(row => {
+            if (row.id === rowId) {
+                const updatedUnits = row.unitsCode.filter((_, i) => i !== unitIndex);
+                return { ...row, unitsCode: updatedUnits };
+            }
+            return row;
+        });
+
+        setGridRows(updatedRows);
     };
 
     const columns = [
@@ -106,7 +151,7 @@ export default function Staff() {
             )
         },
         {
-            name: 'Campus',  // Added Campus column
+            name: 'Campus',
             selector: row => row.campus,
             cell: row => (
                 <input
@@ -117,7 +162,7 @@ export default function Staff() {
             )
         },
         {
-            name: 'Course',  // Changed from Units Taught to Course
+            name: 'Course',
             selector: row => row.course,
             cell: row => (
                 <input
@@ -128,15 +173,40 @@ export default function Staff() {
             )
         },
         {
-            name: 'Units (Code)',  // New Units Code column
+            name: 'Units (Code)',  // Units (Code) column
             selector: row => row.unitsCode,
             cell: row => (
-                <input
-                    type="text"
-                    value={row.unitsCode}
-                    onChange={e => onFieldChange(row.id, 'unitsCode', e.target.value)}
-                />
-            )
+                <div>
+                    {Array.isArray(row.unitsCode) && row.unitsCode.length > 0 ? (
+                        <div className="grid grid-cols-2 gap-2">
+                            {row.unitsCode.map((unit, index) => (
+                                <span key={index} className="unit-item flex items-center">
+                                    {unit}
+                                    <button
+                                        onClick={() => handleRemoveUnit(row.id, index)}
+                                        className="ml-2 text-red-500"
+                                    >
+                                        x
+                                    </button>
+                                </span>
+                            ))}
+                        </div>
+                    ) : (
+                        <span>No units added</span>
+                    )}
+                    <div className="mt-2">
+                        <button
+                            onClick={() => {
+                                setSelectedRowId(row.id);
+                                setIsUnitPopupOpen(true);
+                            }} 
+                            className="bg-blue-500 text-white px-4 py-2 rounded mt-1"
+                        >
+                            Add Unit
+                        </button>
+                    </div>
+                </div>
+            ),
         },
         {
             name: 'Actions',
@@ -170,7 +240,6 @@ export default function Staff() {
                     </button>
                 </div>
             </div>
-
             {loading ? (
                 <p>Loading...</p>
             ) : (
@@ -194,6 +263,36 @@ export default function Staff() {
                         },
                     }}
                 />
+            )}
+
+            {/* Popup Window for Adding Unit */}
+            {isUnitPopupOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded shadow-lg max-w-md max-h-[80vh] overflow-y-auto z-60">
+                        <h2 className="text-2xl font-bold mb-4">Add New Unit</h2>
+                        <input
+                            type="text"
+                            value={newUnit}
+                            onChange={(e) => setNewUnit(e.target.value)}
+                            className="w-full p-2 mb-4 border border-gray-300 rounded"
+                            placeholder="Enter unit name"
+                        />
+                        <div className="flex justify-end space-x-2">
+                            <button
+                                onClick={handleAddUnit}
+                                className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+                            >
+                                Add
+                            </button>
+                            <button
+                                onClick={() => setIsUnitPopupOpen(false)}
+                                className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

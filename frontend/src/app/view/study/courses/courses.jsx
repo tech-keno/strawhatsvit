@@ -6,12 +6,20 @@ import DataTable from 'react-data-table-component';
 export default function Courses() {
     const [gridRows, setGridRows] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [newUnit, setNewUnit] = useState('');
+    const [isUnitPopupOpen, setIsUnitPopupOpen] = useState(false);
+    const [selectedRowId, setSelectedRowId] = useState(null);
 
     useEffect(() => {
         fetch('http://127.0.0.1:5000/documents/courses')
             .then(response => response.json())
             .then(data => {
-                setGridRows(data);
+                // Ensure units is an array
+                const updatedData = data.map(item => ({
+                    ...item,
+                    units: Array.isArray(item.units) ? item.units : item.units.split(', ')
+                }));
+                setGridRows(updatedData);
                 setLoading(false);
             })
             .catch(error => {
@@ -32,13 +40,12 @@ export default function Courses() {
             id: `course${Date.now()}`, // Unique id based on timestamp
             courseName: '',
             studentsEnrolled: '',
-            subjects: ''
+            units: [],
         };
         setGridRows([...gridRows, newRow]);
     };
 
     const deleteRow = (rowId) => {
-        console.log(rowId)
         fetch(`http://127.0.0.1:5000/document/courses/${rowId}`, {
             method: 'DELETE',
         })
@@ -66,10 +73,6 @@ export default function Courses() {
         .then(data => {
             if (data.message) {
                 alert('Data saved successfully!');
-                // Optionally refresh data
-                fetch('http://127.0.0.1:5000/documents/courses')
-                    .then(response => response.json())
-                    .then(data => setGridRows(data));
             } else {
                 alert('Failed to save data');
             }
@@ -77,6 +80,39 @@ export default function Courses() {
         .catch(error => {
             console.error('Error:', error);
         });
+    };
+
+    const handleAddUnit = () => {
+        if (newUnit.trim() === '') {
+            alert('Unit name cannot be empty.');
+            return;
+        }
+
+        const updatedRows = gridRows.map(row => {
+            if (row.id === selectedRowId) {
+                return {
+                    ...row,
+                    units: [...row.units, newUnit],
+                };
+            }
+            return row;
+        });
+
+        setGridRows(updatedRows);
+        setNewUnit('');
+        setIsUnitPopupOpen(false);
+    };
+
+    const handleRemoveUnit = (rowId, unitIndex) => {
+        const updatedRows = gridRows.map(row => {
+            if (row.id === rowId) {
+                const updatedUnits = row.units.filter((_, i) => i !== unitIndex);
+                return { ...row, units: updatedUnits };
+            }
+            return row;
+        });
+
+        setGridRows(updatedRows);
     };
 
     const columns = [
@@ -89,7 +125,7 @@ export default function Courses() {
                     value={row.courseName}
                     onChange={e => onFieldChange(row.id, 'courseName', e.target.value)}
                 />
-            )
+            ),
         },
         {
             name: 'Students Enrolled',
@@ -100,18 +136,43 @@ export default function Courses() {
                     value={row.studentsEnrolled}
                     onChange={e => onFieldChange(row.id, 'studentsEnrolled', e.target.value)}
                 />
-            )
+            ),
         },
         {
-            name: 'Subjects',
-            selector: row => row.subjects,
+            name: 'Units (Code)',
+            selector: row => row.units,
             cell: row => (
-                <input
-                    type="text"
-                    value={row.subjects}
-                    onChange={e => onFieldChange(row.id, 'subjects', e.target.value)}
-                />
-            )
+                <div>
+                    {Array.isArray(row.units) && row.units.length > 0 ? (
+                        <div className="grid grid-cols-2 gap-2"> {/* Adjusted gap for sub-items */}
+                            {row.units.map((unit, index) => (
+                                <span key={index} className="unit-item flex items-center">
+                                    {unit}
+                                    <button
+                                        onClick={() => handleRemoveUnit(row.id, index)}
+                                        className="ml-2 text-red-500"
+                                    >
+                                        x
+                                    </button>
+                                </span>
+                            ))}
+                        </div>
+                    ) : (
+                        <span>No units added</span>
+                    )}
+                    <div className="mt-2"> {/* Reduced vertical spacing */}
+                        <button
+                            onClick={() => {
+                                setSelectedRowId(row.id);
+                                setIsUnitPopupOpen(true);
+                            }} 
+                            className="bg-blue-500 text-white px-4 py-2 rounded mt-1"
+                        >
+                            Add Unit
+                        </button>
+                    </div>
+                </div>
+            ),
         },
         {
             name: 'Actions',
@@ -122,7 +183,7 @@ export default function Courses() {
                 >
                     Delete
                 </button>
-            )
+            ),
         }
     ];
 
@@ -168,6 +229,36 @@ export default function Courses() {
                         },
                     }}
                 />
+            )}
+
+            {/* Popup Window for Adding Unit */}
+            {isUnitPopupOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded shadow-lg max-w-md max-h-[80vh] overflow-y-auto z-60">
+                        <h2 className="text-2xl font-bold mb-4">Add New Unit</h2>
+                        <input
+                            type="text"
+                            value={newUnit}
+                            onChange={(e) => setNewUnit(e.target.value)}
+                            className="w-full p-2 mb-4 border border-gray-300 rounded"
+                            placeholder="Enter unit name"
+                        />
+                        <div className="flex justify-end space-x-2">
+                            <button
+                                onClick={handleAddUnit}
+                                className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+                            >
+                                Add
+                            </button>
+                            <button
+                                onClick={() => setIsUnitPopupOpen(false)}
+                                className="bg-gray-300 text-black px-4 py-2 rounded"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
