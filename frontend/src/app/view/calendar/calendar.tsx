@@ -3,35 +3,20 @@
 import React, { useEffect, useState } from "react";
 import { DayPilot, DayPilotCalendar } from "@daypilot/daypilot-lite-react";
 
+interface CalendarProps {
+    data: Event[];  // You can specify the type if you know the structure of your data
+  }
+
 // Event object containing information for an event, stored in tags of it
 type Event = {
-    day: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
+    day: "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday"
     startTime: string
     endTime: string
     unit: string
     lecturer: string
-    deliveryMode: "online" | "in-person"
+    deliveryMode: "Virtual" | "In-Person"
     classroom: string
     course: string
-}
-
-// example of an event object
-const eventData: Event[] = [
-    {
-        day: "monday",
-        startTime: "08:00",
-        endTime:"10:00",
-        unit: "aaaaaaaaaaaaaaa",
-        lecturer: "me",
-        deliveryMode: "in-person",
-        classroom: "13",
-        course: "SMDE"
-    }
-] 
-
-
-function addEvent(newEvent: Event): void {
-    eventData.push(newEvent);
 }
 
 
@@ -48,8 +33,8 @@ function eventToDaypilotEvent(event: Event): DayPilot.EventData {
         }, 
         id: 0,
         text: "",
-        start: timeToDaypilotTime(event.startTime, event.day),
-        end: timeToDaypilotTime(event.endTime, event.day),
+        start: timeToDaypilotTime(event.startTime, event.day.toLowerCase()),  
+        end: timeToDaypilotTime(event.endTime, event.day.toLowerCase()),  
         // default color
         backColor: "#3d85c6"
 
@@ -81,8 +66,7 @@ function getCalendarEvents(events: DayPilot.EventData[]): Event[] {
     return events.map(e => e.tags.event);
 }
 
-export default function Calendar() {   
-
+export default function Calendar( {data}: CalendarProps) {   
     const colors = [
         {name: "Green", id: "#6aa84f"},
         {name: "Blue", id: "#3d85c6"},
@@ -214,11 +198,12 @@ export default function Calendar() {
         if (!calendar || calendar?.disposed()) {
             return;
         }
-        const events: DayPilot.EventData[] = eventData.map(e => eventToDaypilotEvent(e));
+        data
+        const events: DayPilot.EventData[] = data.map(e => eventToDaypilotEvent(e));
 
         const startDate = "2024-10-01";
 
-        calendar.update({startDate, events});
+        calendar.update({startDate,     events});
 
         // update tag information when an event is moved
         calendar.onEventMoved = (args) => {

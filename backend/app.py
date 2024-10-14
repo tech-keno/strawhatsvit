@@ -308,7 +308,6 @@ def collate_info():
         print(e)
         return jsonify({"error": "Failed to fetch documents"}), 500
 
-    
 @app.route('/generate', methods=['GET'])
 def generate():
     try:
@@ -320,25 +319,34 @@ def generate():
         temp_filename = "otherstuff.xlsx"
         temp_path = os.path.join("uploads", temp_filename) 
 
-
         enrolment_filename = "Sample enrolment data_final.csv"
         uploads_path = os.path.join("uploads", enrolment_filename)
 
         rows = main(uploads_path, csv_path, get_lecturer())
 
-        return rows
+        events = []
+        print(rows)
+        for row in rows:
+            event = {
+                'day': row.get('Day', 'Monday'),  
+                'startTime': row.get('Start Time', '09:00'),  
+                'endTime': row.get('End Time', '10:00'), 
+                'unit': row.get('Unit', ''),  
+                'lecturer': row.get('Lecturer', ''),  
+                'deliveryMode': row.get('Delivery Mode', 'In-Person'), 
+                'classroom': row.get('Classroom', ''),  # 
+                'course': row.get('course', '')  #
+            }
+            events.append(event)
 
+        print(events)
 
+        return events
     except Exception as e:
-        return jsonify({"error": e}), 500
-
+        print(f"An error occurred: {e}")
+        return {"error": str(e)}, 500
 
     
-
-
-
-
-
 
 
 if __name__ == '__main__':
