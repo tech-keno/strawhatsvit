@@ -61,7 +61,7 @@ export default function Navbar() {
           </button>
           <button
             onClick={handleLogout}
-            className="text-2xl text-white hover:text-black hover:bg-gray-300 p-2 rounded font-mono font-extrabold">
+            className="text-2xl text-white hover:text-black hover:bg-[#FDEBD0] p-2 rounded font-mono font-extrabold">
             LOGOUT
           </button>
         </div>
