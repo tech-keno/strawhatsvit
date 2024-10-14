@@ -10,7 +10,7 @@ export default function Home() {
   
   const createCalendar = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:5000/collate_info', {
+      const response = await fetch('http://127.0.0.1:5000/generate', {
         method: 'GET',
         credentials: 'include', 
         headers: {
