@@ -3,23 +3,29 @@
 import React, { useEffect, useState } from "react";
 import { DayPilot, DayPilotCalendar } from "@daypilot/daypilot-lite-react";
 
+// Event object containing information for an event, stored in tags of it
 type Event = {
     day: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
-    time: string
+    startTime: string
+    endTime: string
     unit: string
     lecturer: string
     deliveryMode: "online" | "in-person"
     classroom: string
+    course: string
 }
 
+// example of an event object
 const eventData: Event[] = [
     {
         day: "monday",
-        time: "8:00am to 10:00am",
+        startTime: "08:00",
+        endTime:"10:00",
         unit: "aaaaaaaaaaaaaaa",
         lecturer: "me",
         deliveryMode: "in-person",
-        classroom: "13"
+        classroom: "13",
+        course: "SMDE"
     }
 ] 
 
@@ -36,23 +42,17 @@ function addEvent(newEvent: Event): void {
  * Returns a Daypilot.EventData object with a copy of the event object stored in its tags
 */
 function eventToDaypilotEvent(event: Event): DayPilot.EventData {
-    const dayToDateMap: {[key: string] : string} = {
-        "monday": "2024-09-29T",
-        "tuesday": "2024-09-30T",
-        "wednesday": "2024-10-01T",
-        "thursday": "2024-10-02T",
-        "friday": "2024-10-03T",
-        "saturday": "2024-10-04T",
-        "sunday": "2024-10-05T"
-    }
-
-    const times = event.time.split(" ");
     return {
-        tags: {event},
+        tags: {
+            event,
+        }, 
         id: 0,
         text: "",
-        start: `${dayToDateMap[event.day]}${timeToDaypilotTime(times[0])}`,
-        end: `${dayToDateMap[event.day]}${timeToDaypilotTime(times[2])}`
+        start: timeToDaypilotTime(event.startTime, event.day),
+        end: timeToDaypilotTime(event.endTime, event.day),
+        // default color
+        backColor: "#3d85c6"
+
     }
 }
 
@@ -63,41 +63,18 @@ function eventToDaypilotEvent(event: Event): DayPilot.EventData {
  * 
  * Returns a string in the hh:mm:ss format
 */
-function timeToDaypilotTime(time: string): string {
-    let [timePart, modifier] = time.match(/(\d{1,2}:\d{2})(am|pm)/i)?.slice(1) || [];
-
-    let [hours, minutes] = timePart.split(":").map(Number);
-
-    if (modifier === "pm" && hours < 12) {
-        hours += 12;
-    } else if (modifier === "am" && hours === 12) {
-        hours = 0;
+function timeToDaypilotTime(time: string, day: string): string {
+    const dayToDateMap: {[key: string] : string} = {
+        "monday": "2024-09-29T",
+        "tuesday": "2024-09-30T",
+        "wednesday": "2024-10-01T",
+        "thursday": "2024-10-02T",
+        "friday": "2024-10-03T",
+        "saturday": "2024-10-04T",
+        "sunday": "2024-10-05T"
     }
 
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:00`;
-}
-
-/* Converts a string of the form hh:mm:ss into a string of the form "8:00"am
- *
- * time - String to be converted
- * 
- * Returns a string in the hh:mm:ss format
-*/
-function daypilotTimeToTime(date: DayPilot.Date): string {
-    let [hours, minutes] = date.toString().match(/(\d{2}:)/)?.slice(1).map(Number) || [];
-
-    let modifier = 'am';
-
-    if (hours >= 12) {
-        modifier = 'pm';
-        if (hours > 12) {
-            hours -= 12;
-        }
-    } else if (hours === 0) {
-        hours = 12;
-    }
-
-    return `${hours.toString()}:${minutes.toString().padStart(2, '0')}${modifier}`
+    return `${dayToDateMap[day]}${time}:00`
 }
 
 function getCalendarEvents(events: DayPilot.EventData[]): Event[] {
@@ -118,21 +95,41 @@ export default function Calendar() {
         {name: "Purple", id: "#af8ee5"},
     ];
 
+    const deliveryMode = [
+        {name: "Online", id: "online"},
+        {name: "In Person", id: "in-person"}
+    ];
+
     // create useState hook
     const [calendar, setCalendar] = useState<DayPilot.Calendar>();
 
     // form created when trying to edit an event
     const editEvent = async (e: DayPilot.Event) => {
+        // each line corresponds to a form entry line
         const form = [
-            {name: "Event text", id: "text", type: "text"},
-            {name: "Event color", id: "backColor", type: "select", options: colors},
+            {name: "Unit", id: "unit", type: "text"},
+            {name: "Start Time", id: "startTime", timeInterval: 15, type: "time"},
+            {name: "End Time", id: "endTime", timeInterval: 15, type: "time"},
+            {name: "Lecturer", id: "lecturer", type: "text"},
+            {name: "Delivery Mode", id: "deliveryMode", type: "select", options: deliveryMode},
+            {name: "Classroom", id: "classroom", type: "text"},
+            {name: "Color", id: "color", type: "select", options: colors}
         ];
 
-        const modal = await DayPilot.Modal.form(form, e.data);
+        // update information based on form
+        const modal = await DayPilot.Modal.form(form, e.data.tags.event);
         if (modal.canceled) { return; }
-        e.data.text = modal.result.text;
-        e.data.backColor = modal.result.backColor;
+        e.data.tags.event.unit = modal.result.unit;
+        e.data.tags.event.startTime = modal.result.startTime;
+        e.data.start = timeToDaypilotTime(modal.result.startTime, e.data.tags.event.day);
+        e.data.tags.event.endTime = modal.result.endTime;
+        e.data.end = timeToDaypilotTime(modal.result.endTime, e.data.tags.event.day);
+        e.data.tags.event.lecturer = modal.result.lecturer;
+        e.data.tags.event.deliveryMode = modal.result.deliveryMode;
+        e.data.tags.event.classroom = modal.result.classroom;
+        e.data.backColor = modal.result.color;
         calendar?.events.update(e);
+        
 
         // extracts all the event data from the calendar and prints to console
         console.log(calendar?.events.list.map(e => e.tags.event))
@@ -176,7 +173,10 @@ export default function Calendar() {
         ];
         args.data.html = `
         <div>
-          ${args.data.tags.event.unit}
+            <h1 style="font-size: 16px; text-decoration: underline;"> ${args.data.tags.event.unit} </h1>
+            <p> ${args.data.tags.event.startTime} to ${args.data.tags.event.endTime}</p>
+            <p> ${args.data.tags.event.lecturer}</p>
+            <p> ${args.data.tags.event.deliveryMode}: ${args.data.tags.event.classroom}</p>
         <div/>`
     };
 
@@ -220,15 +220,18 @@ export default function Calendar() {
 
         calendar.update({startDate, events});
 
+        // update tag information when an event is moved
         calendar.onEventMoved = (args) => {
             console.log("Moved: " + args.e.text());
+            // args.e.data.tags.event.startTime = GOODLUCKSAM(args.e.start);
+            // args.e.data.tags.event.endTime = GOODLUCKSAM(args.e.end);
           };
 
     }, [calendar]);
 
     // when selecting a time range, creat new event (maybe remove)
     const onTimeRangeSelected = async (args: DayPilot.CalendarTimeRangeSelectedArgs) => {
-        const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
+        const modal = await DayPilot.Modal.prompt("Create a new event:", "New Class");
         calendar?.clearSelection();
         if (modal.canceled) {
             return;
