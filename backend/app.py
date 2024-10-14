@@ -254,7 +254,7 @@ def get_lecturer():
     return_dict = {}
     for doc in documents:
         lecturer = doc.get("name")
-        units_teach = doc.get("unitsCode").split(",")
+        units_teach = doc.get("unitsCode")
         if lecturer not in return_dict:
             return_dict[lecturer] = units_teach
         else:

@@ -119,7 +119,7 @@ def algo(df1, df2, lecturers):
 
     start_time = None
 
-    
+
 
     for time_index in range(55):
         day,  hour = convert_index_to_time(time_index)
