@@ -33,8 +33,8 @@ function eventToDaypilotEvent(event: Event): DayPilot.EventData {
         }, 
         id: 0,
         text: "",
-        start: timeToDaypilotTime(event.startTime, event.day.toLowerCase()),  
-        end: timeToDaypilotTime(event.endTime, event.day.toLowerCase()),  
+        start: timeToDaypilotTime(event.startTime, event.day),  
+        end: timeToDaypilotTime(event.endTime, event.day),  
         // default color
         backColor: "#3d85c6"
 
@@ -50,16 +50,38 @@ function eventToDaypilotEvent(event: Event): DayPilot.EventData {
 */
 function timeToDaypilotTime(time: string, day: string): string {
     const dayToDateMap: {[key: string] : string} = {
-        "monday": "2024-09-29T",
-        "tuesday": "2024-09-30T",
-        "wednesday": "2024-10-01T",
-        "thursday": "2024-10-02T",
-        "friday": "2024-10-03T",
-        "saturday": "2024-10-04T",
-        "sunday": "2024-10-05T"
+        "Monday": "2024-09-29T",
+        "Tuesday": "2024-09-30T",
+        "Wednesday": "2024-10-01T",
+        "Thursday": "2024-10-02T",
+        "Friday": "2024-10-03T",
+        "Saturday": "2024-10-04T",
+        "Sunday": "2024-10-05T",
     }
 
     return `${dayToDateMap[day]}${time}:00`
+}
+
+function daypilotTimeToTime(daypilotTime: string): { time: string, day: string } {
+    const dateToDayMap: { [key: string]: string } = {
+        "2024-09-29": "Monday",
+        "2024-09-30": "Tuesday",
+        "2024-10-01": "Wednesday",
+        "2024-10-02": "Thursday",
+        "2024-10-03": "Friday",
+        "2024-10-04": "Saturday",
+        "2024-10-05": "Sunday",
+    };
+
+    // Extract the date part (first 10 characters: YYYY-MM-DD)
+    var date = daypilotTime.substring(0, 10);
+
+    // Extract the time part (characters from index 11 to 16: HH:MM)
+    var time = daypilotTime.substring(11, 16);
+
+    var day = dateToDayMap[date];
+
+    return { time, day };
 }
 
 function getCalendarEvents(events: DayPilot.EventData[]): Event[] {
@@ -80,8 +102,8 @@ export default function Calendar( {data}: CalendarProps) {
     ];
 
     const deliveryMode = [
-        {name: "Online", id: "online"},
-        {name: "In Person", id: "in-person"}
+        {name: "Virtual", id: "Virtual"},
+        {name: "In Person", id: "In-Person"}
     ];
 
     // create useState hook
@@ -97,11 +119,10 @@ export default function Calendar( {data}: CalendarProps) {
             {name: "Lecturer", id: "lecturer", type: "text"},
             {name: "Delivery Mode", id: "deliveryMode", type: "select", options: deliveryMode},
             {name: "Classroom", id: "classroom", type: "text"},
-            {name: "Color", id: "color", type: "select", options: colors}
         ];
 
         // update information based on form
-        const modal = await DayPilot.Modal.form(form, e.data.tags.event);
+        var modal = await DayPilot.Modal.form(form, e.data.tags.event);
         if (modal.canceled) { return; }
         e.data.tags.event.unit = modal.result.unit;
         e.data.tags.event.startTime = modal.result.startTime;
@@ -111,13 +132,24 @@ export default function Calendar( {data}: CalendarProps) {
         e.data.tags.event.lecturer = modal.result.lecturer;
         e.data.tags.event.deliveryMode = modal.result.deliveryMode;
         e.data.tags.event.classroom = modal.result.classroom;
-        e.data.backColor = modal.result.color;
         calendar?.events.update(e);
         
 
         // extracts all the event data from the calendar and prints to console
         console.log(calendar?.events.list.map(e => e.tags.event))
     };
+
+    // form created to change event colour
+    const changeColour = async (e: DayPilot.Event) => {
+        const form = [
+            {name: "Color", id: "backColor", type: "select", options: colors}
+        ];
+        var modal = await DayPilot.Modal.form(form, e.data);
+        if (modal.canceled) { return; }
+        e.data.backColor = modal.result.backColor;
+        calendar?.events.update(e);
+
+    }
 
     // menu that pops up when clicking the little square on the top right of events
     const contextMenu = new DayPilot.Menu({
@@ -132,9 +164,15 @@ export default function Calendar( {data}: CalendarProps) {
                 text: "-"
             },
             {
-                text: "Edit...",
+                text: "Edit event",
                 onClick: async args => {
                     await editEvent(args.source);
+                }
+            },
+            {
+                text: "Change colour",
+                onClick: async args => {
+                    await changeColour(args.source);
                 }
             }
         ]
@@ -208,8 +246,8 @@ export default function Calendar( {data}: CalendarProps) {
         // update tag information when an event is moved
         calendar.onEventMoved = (args) => {
             console.log("Moved: " + args.e.text());
-            // args.e.data.tags.event.startTime = GOODLUCKSAM(args.e.start);
-            // args.e.data.tags.event.endTime = GOODLUCKSAM(args.e.end);
+            args.e.data.tags.event.startTime = daypilotTimeToTime(args.e.data.start);
+            args.e.data.tags.event.endTime = daypilotTimeToTime(args.e.data.end);
           };
 
     }, [calendar]);
