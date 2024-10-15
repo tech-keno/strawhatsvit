@@ -82,7 +82,11 @@ function daypilotTimeToTime(daypilotTime: DayPilot.Date): string[] {
         "2024-10-05": "Sunday",
     };
 
-    return daypilotTime.toString().split("T").map((e, i) => i === 0 ? dateToDayMap[e] : e);
+    return daypilotTime
+        .toString()
+        .split("T")
+        .map((e, i) => i === 0 ? dateToDayMap[e] : e)
+        .map((e, i) => i === 1 ? e.slice(0, 5) : e);
 }
 
 function getCalendarEvents(events: DayPilot.EventData[]): Event[] {
@@ -247,8 +251,10 @@ export default function Calendar( {data}: CalendarProps) {
         // update tag information when an event is moved
         calendar.onEventMoved = (args) => {
             console.log("Moved: " + args.e.text());
-            args.e.data.tags.event.startTime = daypilotTimeToTime(args.e.data.start);
-            args.e.data.tags.event.endTime = daypilotTimeToTime(args.e.data.end);
+            args.e.data.tags.event.startTime = daypilotTimeToTime(args.e.data.start)[1];
+            args.e.data.tags.event.endTime = daypilotTimeToTime(args.e.data.end)[1];
+            args.e.data.tags.event.day = daypilotTimeToTime(args.e.data.start)[0];
+            console.log(calendar?.events.list.map(e => e.tags.event));
           };
 
     }, [calendar]);
