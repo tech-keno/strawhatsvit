@@ -5,11 +5,13 @@ import { DayPilot, DayPilotCalendar } from "@daypilot/daypilot-lite-react";
 
 interface CalendarProps {
     data: Event[];  // You can specify the type if you know the structure of your data
-  }
+}
+
+type DayWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday"
 
 // Event object containing information for an event, stored in tags of it
 type Event = {
-    day: "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday"
+    day: DayWeek
     startTime: string
     endTime: string
     unit: string
@@ -71,8 +73,8 @@ function timeToDaypilotTime(time: string, day: string): string {
  * Returns an array of strings with the 0 index being the day and 1 indec the
  * time
 */
-function daypilotTimeToTime(daypilotTime: DayPilot.Date): string[] {
-    const dateToDayMap: { [key: string]: string } = {
+function daypilotTimeToTime(daypilotTime: DayPilot.Date): {day: DayWeek, time: string} {
+    const dateToDayMap: { [key: string]: DayWeek } = {
         "2024-09-29": "Monday",
         "2024-09-30": "Tuesday",
         "2024-10-01": "Wednesday",
@@ -82,11 +84,9 @@ function daypilotTimeToTime(daypilotTime: DayPilot.Date): string[] {
         "2024-10-05": "Sunday",
     };
 
-    return daypilotTime
-        .toString()
-        .split("T")
-        .map((e, i) => i === 0 ? dateToDayMap[e] : e)
-        .map((e, i) => i === 1 ? e.slice(0, 5) : e);
+    let [day, time] = daypilotTime.toString().split("T")
+
+    return { day: dateToDayMap[day], time: time.slice(0, 5) };
 }
 
 function getCalendarEvents(events: DayPilot.EventData[]): Event[] {
@@ -111,35 +111,31 @@ export default function Calendar( {data}: CalendarProps) {
         {name: "In Person", id: "In-Person"}
     ];
 
+    const eventForm = [
+        {name: "Unit", id: "unit", type: "text"},
+        {name: "Start Time", id: "startTime", timeInterval: 15, type: "time"},
+        {name: "End Time", id: "endTime", timeInterval: 15, type: "time"},
+        {name: "Lecturer", id: "lecturer", type: "text"},
+        {name: "Delivery Mode", id: "deliveryMode", type: "select", options: deliveryMode},
+        {name: "Classroom", id: "classroom", type: "text"},
+        {name: "Course", id: "course", type: "text"},
+    ];
+
     // create useState hook
     const [calendar, setCalendar] = useState<DayPilot.Calendar>();
 
     // form created when trying to edit an event
     const editEvent = async (e: DayPilot.Event) => {
-        // each line corresponds to a form entry line
-        const form = [
-            {name: "Unit", id: "unit", type: "text"},
-            {name: "Start Time", id: "startTime", timeInterval: 15, type: "time"},
-            {name: "End Time", id: "endTime", timeInterval: 15, type: "time"},
-            {name: "Lecturer", id: "lecturer", type: "text"},
-            {name: "Delivery Mode", id: "deliveryMode", type: "select", options: deliveryMode},
-            {name: "Classroom", id: "classroom", type: "text"},
-        ];
-
         // update information based on form
-        var modal = await DayPilot.Modal.form(form, e.data.tags.event);
+        var modal = await DayPilot.Modal.form(eventForm, e.data.tags.event);
         if (modal.canceled) { return; }
-        e.data.tags.event.unit = modal.result.unit;
-        e.data.tags.event.startTime = modal.result.startTime;
-        e.data.start = timeToDaypilotTime(modal.result.startTime, e.data.tags.event.day);
-        e.data.tags.event.endTime = modal.result.endTime;
-        e.data.end = timeToDaypilotTime(modal.result.endTime, e.data.tags.event.day);
-        e.data.tags.event.lecturer = modal.result.lecturer;
-        e.data.tags.event.deliveryMode = modal.result.deliveryMode;
-        e.data.tags.event.classroom = modal.result.classroom;
+
+        e.data.tags.event = modal.result;
+        e.data.start = timeToDaypilotTime(modal.result.startTime, modal.result.day);
+        e.data.end = timeToDaypilotTime(modal.result.endTime, modal.result.day);
+
         calendar?.events.update(e);
         
-
         // extracts all the event data from the calendar and prints to console
         console.log(calendar?.events.list.map(e => e.tags.event))
     };
@@ -149,8 +145,10 @@ export default function Calendar( {data}: CalendarProps) {
         const form = [
             {name: "Color", id: "backColor", type: "select", options: colors}
         ];
+
         var modal = await DayPilot.Modal.form(form, e.data);
         if (modal.canceled) { return; }
+
         e.data.backColor = modal.result.backColor;
         calendar?.events.update(e);
 
@@ -251,28 +249,36 @@ export default function Calendar( {data}: CalendarProps) {
         // update tag information when an event is moved
         calendar.onEventMoved = (args) => {
             console.log("Moved: " + args.e.text());
-            args.e.data.tags.event.startTime = daypilotTimeToTime(args.e.data.start)[1];
-            args.e.data.tags.event.endTime = daypilotTimeToTime(args.e.data.end)[1];
-            args.e.data.tags.event.day = daypilotTimeToTime(args.e.data.start)[0];
-            console.log(calendar?.events.list.map(e => e.tags.event));
+            args.e.data.tags.event.startTime = daypilotTimeToTime(args.e.data.start).time;
+            args.e.data.tags.event.endTime = daypilotTimeToTime(args.e.data.end).time;
+            args.e.data.tags.event.day = daypilotTimeToTime(args.e.data.start).day;
           };
 
     }, [calendar]);
 
     // when selecting a time range, creat new event (maybe remove)
     const onTimeRangeSelected = async (args: DayPilot.CalendarTimeRangeSelectedArgs) => {
-        const modal = await DayPilot.Modal.prompt("Create a new event:", "New Class");
-        calendar?.clearSelection();
-        if (modal.canceled) {
-            return;
+        let e: Event = {
+            day: daypilotTimeToTime(args.start).day,
+            startTime: daypilotTimeToTime(args.start).time,
+            endTime: daypilotTimeToTime(args.end).time,
+            unit: "",
+            lecturer: "",
+            deliveryMode: "In-Person",
+            classroom: "",
+            course: ""
         }
+
+        var modal = await DayPilot.Modal.form(eventForm, e);
+        if (modal.canceled) { return; }
+
         calendar?.events.add({
-            start: args.start,
-            end: args.end,
+            start: timeToDaypilotTime(modal.result.startTime, modal.result.day),
+            end: timeToDaypilotTime(modal.result.endTime, modal.result.day),
             id: DayPilot.guid(),
             text: modal.result,
             tags: {
-                participants: 1,
+                event: modal.result
             }
         });
     };
