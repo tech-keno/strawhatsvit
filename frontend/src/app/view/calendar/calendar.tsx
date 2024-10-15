@@ -62,7 +62,16 @@ function timeToDaypilotTime(time: string, day: string): string {
     return `${dayToDateMap[day]}${time}:00`
 }
 
-function daypilotTimeToTime(daypilotTime: string): { time: string, day: string } {
+
+/* Converts a DayPilot.Date object into an array of strings corresponding to
+ * date and time
+ *
+ * daypilotTime - Date object to be converted
+ * 
+ * Returns an array of strings with the 0 index being the day and 1 indec the
+ * time
+*/
+function daypilotTimeToTime(daypilotTime: DayPilot.Date): string[] {
     const dateToDayMap: { [key: string]: string } = {
         "2024-09-29": "Monday",
         "2024-09-30": "Tuesday",
@@ -73,15 +82,7 @@ function daypilotTimeToTime(daypilotTime: string): { time: string, day: string }
         "2024-10-05": "Sunday",
     };
 
-    // Extract the date part (first 10 characters: YYYY-MM-DD)
-    var date = daypilotTime.substring(0, 10);
-
-    // Extract the time part (characters from index 11 to 16: HH:MM)
-    var time = daypilotTime.substring(11, 16);
-
-    var day = dateToDayMap[date];
-
-    return { time, day };
+    return daypilotTime.toString().split("T").map((e, i) => i === 0 ? dateToDayMap[e] : e);
 }
 
 function getCalendarEvents(events: DayPilot.EventData[]): Event[] {
