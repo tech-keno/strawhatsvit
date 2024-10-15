@@ -325,7 +325,7 @@ def generate():
         rows = main(uploads_path, csv_path, get_lecturer())
 
         events = []
-        print(rows)
+
         for row in rows:
             event = {
                 'day': row.get('Day', 'Monday'),  

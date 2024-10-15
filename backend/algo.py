@@ -146,8 +146,8 @@ Converts a specific index to a time period, 8am-8pm
 
 def convert_index_to_time(index):
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-    day = days[index // 12]
-    hour = 8 + (index % 12) 
+    day = days[index // 11]
+    hour = 8 + (index % 11) 
     
     return day, hour
 
