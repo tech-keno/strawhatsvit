@@ -205,6 +205,28 @@ export default function Calendar( {data}: CalendarProps) {
         <div/>`
     };
 
+    // called whenever an event is moved
+    const onEventMoved = (args: DayPilot.CalendarEventMovedArgs) => {
+        args.e.data.tags.event.startTime = daypilotTimeToTime(args.newStart).time;
+        args.e.data.tags.event.endTime = daypilotTimeToTime(args.newEnd).time;
+        args.e.data.tags.event.day = daypilotTimeToTime(args.newStart).day;
+
+        // updating html based on new data
+        onBeforeEventRender({ data: args.e.data, control: args.control });
+        calendar?.events.update(args.e);
+    };
+
+    // called whenever an event is resized
+    const onEventResized = (args: DayPilot.CalendarEventResizedArgs) => {
+        args.e.data.tags.event.startTime = daypilotTimeToTime(args.newStart).time;
+        args.e.data.tags.event.endTime = daypilotTimeToTime(args.newEnd).time;
+        args.e.data.tags.event.day = daypilotTimeToTime(args.newStart).day;
+
+        // updating html based on new data
+        onBeforeEventRender({ data: args.e.data, control: args.control });
+        calendar?.events.update(args.e);
+    };
+
     // configuration of calendar view
     const initialConfig: DayPilot.CalendarConfig = {
         viewType: "Week",
@@ -213,46 +235,18 @@ export default function Calendar( {data}: CalendarProps) {
 
     const [config, setConfig] = useState(initialConfig);
 
-    // use effect hook manages changing 
     useEffect(() => {
-        // const fetchDocuments = async () => {
-        //     try {
-        //         const response = await fetch('http://localhost:5000/get_classes', {
-        //             method: 'GET',
-        //             headers: {
-        //                 'Content-Type': 'application/json',
-        //             },
-        //         });
-        //         if (response.ok) {
-        //             const documents = await response.json();
-        //             console.log(documents);
-        //         } else {
-        //             console.error("Failed to fetch documents");
-        //         }
-        //     } catch (error) {
-        //         console.error("Error fetching documents:", error);
-        //     }
-        // };
-        
-        // fetchDocuments();
 
         if (!calendar || calendar?.disposed()) {
             return;
         }
-        data
         const events: DayPilot.EventData[] = data.map(e => eventToDaypilotEvent(e));
 
         const startDate = "2024-10-01";
 
-        calendar.update({startDate,     events});
+        calendar.update({startDate, events});
 
         // update tag information when an event is moved
-        calendar.onEventMoved = (args) => {
-            console.log("Moved: " + args.e.text());
-            args.e.data.tags.event.startTime = daypilotTimeToTime(args.e.data.start).time;
-            args.e.data.tags.event.endTime = daypilotTimeToTime(args.e.data.end).time;
-            args.e.data.tags.event.day = daypilotTimeToTime(args.e.data.start).day;
-          };
 
     }, [calendar]);
 
@@ -282,14 +276,14 @@ export default function Calendar( {data}: CalendarProps) {
             }
         });
     };
-    
-    
 
     return (
         <div>
             <DayPilotCalendar
                 {...config}
                 onTimeRangeSelected={onTimeRangeSelected}
+                onEventMoved={onEventMoved}
+                onEventResized={onEventResized}
                 onEventClick={async args => { await editEvent(args.e); }}
                 contextMenu={contextMenu}
                 onBeforeEventRender={onBeforeEventRender}
