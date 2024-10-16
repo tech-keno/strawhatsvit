@@ -6,6 +6,8 @@ import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import logo from './vit_logo_alt.png'
+import sampleImage from './sample_enrolment_data.png' // Import the image
+import HelpTable from './helpTable'
 
 export default function Navbar() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -70,17 +72,17 @@ export default function Navbar() {
       {/* Popup Window */}
       {isPopupOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg max-w-md max-h-[80vh] overflow-y-auto z-60">
+          <div className="bg-white w-[80%] h-[80%] p-8 rounded-lg shadow-lg overflow-auto relative">
             <h2 className="text-2xl font-bold mb-4">How to Use</h2>
-            <p className="text-lg">Uploading data should be in the following format:</p>
-            
-            {/* Display the CSV file name */}
-            <p className="text-lg font-mono mt-4">sample_enrolment.csv</p>
+            <p className="text-lg mt-4">Uploading data should be in the following format:</p>
 
-            
+            {/* Render the HelpTable component here */}
+            <HelpTable />
 
-            {/* Placeholder for more information */}
-            <p className="text-lg mt-4">More information to fill later</p>
+            {/* Instructions */}
+            <p className="text-lg mt-4">Enrolment data can be uploaded from the Timetable page.</p>
+            <p className="text-lg mt-4">Rest of the data input order should be the Buildings, Study, then Personnel pages.</p>
+            <p className="text-lg mt-4">Once data is entered, click Generate on the Timetable page, individual classes can dragged/edited.</p>
 
             <button
               onClick={() => setIsPopupOpen(false)}
