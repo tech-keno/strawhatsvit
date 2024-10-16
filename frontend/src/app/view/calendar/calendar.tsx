@@ -205,6 +205,13 @@ export default function Calendar( {data}: CalendarProps) {
         <div/>`
     };
 
+    const onBeforeHeaderRender = (args: DayPilot.CalendarBeforeHeaderRenderArgs) => {
+        args.header.html = `
+        <div>
+            ${daypilotTimeToTime(args.column.start).day}
+        <div/>`
+    };
+
     // called whenever an event is moved
     const onEventMoved = (args: DayPilot.CalendarEventMovedArgs) => {
         args.e.data.tags.event.startTime = daypilotTimeToTime(args.newStart).time;
@@ -214,6 +221,7 @@ export default function Calendar( {data}: CalendarProps) {
         // updating html based on new data
         onBeforeEventRender({ data: args.e.data, control: args.control });
         calendar?.events.update(args.e);
+        console.log(args.control.columns);
     };
 
     // called whenever an event is resized
@@ -287,6 +295,7 @@ export default function Calendar( {data}: CalendarProps) {
                 onEventClick={async args => { await editEvent(args.e); }}
                 contextMenu={contextMenu}
                 onBeforeEventRender={onBeforeEventRender}
+                onBeforeHeaderRender={onBeforeHeaderRender}
                 controlRef={setCalendar}
             />
         </div>
