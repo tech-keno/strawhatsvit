@@ -319,11 +319,16 @@ def generate():
         temp_filename = "otherstuff.xlsx"
         temp_path = os.path.join("uploads", temp_filename) 
 
-        enrolment_filename = "Sample enrolment data_final.csv"
-        uploads_path = os.path.join("uploads", enrolment_filename)
+        uploads_folder = r'uploads'
+        uploaded_files = [os.path.join(uploads_folder, f) for f in os.listdir(uploads_folder) if os.path.isfile(os.path.join(uploads_folder, f))]
+
+        if not uploaded_files:
+            return jsonify({"error": "No uploaded file found"}), 400
+
+        # Get the most recently modified file
+        uploads_path = max(uploaded_files, key=os.path.getmtime)
 
         rows = main(uploads_path, csv_path, get_lecturer())
-
         events = []
 
         for row in rows:
