@@ -31,12 +31,13 @@ export default function Units() {
         const newRow = {
             id: `unit${Date.now()}`, // Unique id based on timestamp
             unitName: '',
-            prerequisites: '',
+            deliveryMethod: '', // Changed from prerequisites to deliveryMethod
             studentsEnrolled: '',
             timeHrs: ''  // Changed from periods to timeHrs
         };
         setGridRows([...gridRows, newRow]);
     };
+    
     const deleteRow = (rowId) => {
         console.log(rowId)
         fetch(`http://127.0.0.1:5000/document/units/${rowId}`, {
@@ -92,13 +93,13 @@ export default function Units() {
             )
         },
         {
-            name: 'Prerequisites',
-            selector: row => row.prerequisites,
+            name: 'Delivery Method', // Changed from Prerequisites to Delivery Method
+            selector: row => row.deliveryMethod,
             cell: row => (
                 <input
                     type="text"
-                    value={row.prerequisites}
-                    onChange={e => onFieldChange(row.id, 'prerequisites', e.target.value)}
+                    value={row.deliveryMethod}
+                    onChange={e => onFieldChange(row.id, 'deliveryMethod', e.target.value)}
                 />
             )
         },

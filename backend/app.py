@@ -246,6 +246,7 @@ def get_classes():
         print(e)
         return jsonify({"error": "Failed to fetch documents"}), 500
 
+
 def get_lecturer():
     staff_collection = db["staff"]
     documents = staff_collection.find()
@@ -253,19 +254,16 @@ def get_lecturer():
     return_dict = {}
     for doc in documents:
         lecturer = doc.get("name")
-        units_teach = doc.get("unitsCode").split(",")
+        units_teach = doc.get("unitsCode")
         if lecturer not in return_dict:
             return_dict[lecturer] = units_teach
         else:
             return_dict[lecturer] = return_dict[lecturer] + units_teach
-
     return return_dict
 
-@app.route('/collate_info', methods=['GET'])
+
 def collate_info():
-    try:
-        db_names = ["units", "buildings", "students", "staff", "courses"]
-        
+    try:     
         unit_collection = db["units"]
         unit_rows = []
         documents = unit_collection.find()
@@ -273,15 +271,16 @@ def collate_info():
         for doc in documents:
             unit_name = doc.get("unitName", "Unknown Unit")
             time_hrs = doc.get("timeHrs", "N/A")
+            deliveryMethod = doc.get("deliveryMethod", "N/A")
+
             unit_rows.append({
                 "Unit": unit_name,
-                "Time": time_hrs 
+                "Time": time_hrs,
+                "Delivery Mode": deliveryMethod
             })
         
         buildings_collection = db["building"]
         documents = buildings_collection.find()
-        
-        print(get_lecturer())
 
         classrooms = []
         for doc in documents:
@@ -290,34 +289,70 @@ def collate_info():
         
         for row in unit_rows:
             if classrooms: 
-                row["classroom"] = classrooms.pop()
+                row["Classroom"] = classrooms.pop()
             else:
-                row["classroom"] = "No classroom available"
+                row["Classroom"] = "No classroom available"
 
 
         csv_filename = "collated_info.csv"
         csv_path = os.path.join("output", csv_filename)  
 
         with open(csv_path, mode='w', newline='') as file:
-            writer = csv.DictWriter(file, fieldnames=["Unit", "Time", "classroom"])
+            writer = csv.DictWriter(file, fieldnames=["Unit", "Time", "Classroom", "Delivery Mode"])
             writer.writeheader()
             writer.writerows(unit_rows)
-        
-        return jsonify(unit_rows)
+
         
     
     except Exception as e:
         print(e)
         return jsonify({"error": "Failed to fetch documents"}), 500
 
+@app.route('/generate', methods=['GET'])
+def generate():
+    try:
+        collate_info()
+
+        csv_filename = "collated_info.csv"
+        csv_path = os.path.join("output", csv_filename) 
+
+        temp_filename = "otherstuff.xlsx"
+        temp_path = os.path.join("uploads", temp_filename) 
+
+        uploads_folder = r'uploads'
+        uploaded_files = [os.path.join(uploads_folder, f) for f in os.listdir(uploads_folder) if os.path.isfile(os.path.join(uploads_folder, f))]
+
+        if not uploaded_files:
+            return jsonify({"error": "No uploaded file found"}), 400
+
+        # Get the most recently modified file
+        uploads_path = max(uploaded_files, key=os.path.getmtime)
+
+        rows = main(uploads_path, csv_path, get_lecturer())
+        events = []
+
+        for row in rows:
+            event = {
+                'day': row.get('Day', 'Monday'),  
+                'startTime': row.get('Start Time', '09:00'),  
+                'endTime': row.get('End Time', '10:00'), 
+                'unit': row.get('Unit', ''),  
+                'lecturer': row.get('Lecturer', ''),  
+                'deliveryMode': row.get('Delivery Mode', 'In-Person'), 
+                'classroom': row.get('Classroom', ''),  # 
+                'course': row.get('course', '')  #
+            }
+            events.append(event)
+
+        print(events)
+
+        return events
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return {"error": str(e)}, 500
+
     
-
-
-
-
-
 
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)
-    

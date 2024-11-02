@@ -79,9 +79,9 @@ export default function Login() {
           </button>
         </form>
         <p className="text-red-500 mt-4">{responseMessage}</p>
-        <a href="#" className="text-orange-500 text-sm mt-2 hover:underline">
+        {/* <a href="#" className="text-orange-500 text-sm mt-2 hover:underline">
           Forgot password?
-        </a>
+        </a> */}
       </header>
     </div>
   );
