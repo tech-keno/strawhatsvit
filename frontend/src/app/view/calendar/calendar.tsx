@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { DayPilot, DayPilotCalendar } from "@daypilot/daypilot-lite-react";
+import ExcelJS from 'exceljs';
 
 interface CalendarProps {
     data: Event[];  // You can specify the type if you know the structure of your data
@@ -282,7 +283,42 @@ export default function Calendar({data}: CalendarProps) {
 
     // creates an excel document from the frontend
     const exportEventData = async () => {
+        if (!calendar) {
+            return;
+        }
+        
+        // Getting event data from the calendar
+        const eventData = calendar.events.list.map(e => e.tags.event);
 
+        // Create a new workbook
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Sheet1');
+      
+        // Add headers
+        const headers = Object.keys(eventData[0]);
+        worksheet.addRow(headers);
+      
+        // Add data
+        eventData.forEach(row => {
+          worksheet.addRow(Object.values(row));
+        });
+      
+        // Generate buffer
+        const buffer = await workbook.xlsx.writeBuffer();
+        
+        // Convert buffer to blob and create url
+        const url = window.URL.createObjectURL(new Blob([buffer], { 
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        }));
+
+        // Create a document with the url to download
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'calendar.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
     }
 
     return (
