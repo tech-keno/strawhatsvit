@@ -32,17 +32,116 @@ Strawhats proposes an easy to use, extendable, and reliable solution using an ad
 
 put list of all documents here
 
-## System requirements (tools/database and their versions) STILL NEEDS TO BE DONE (who knows this?)
+## System requirements (tools/database and their versions)
 
-## Installation guide (setup and configuration details to install/run your code) STILL NEEDS TO BE DONE tech and sam i think
+NPM node package manager
+PLEASE SOMEONE CHECK THIS BECAUSE I AM NOT SURE
+ALSO HOW DO YOU SET UP MONGODB AND HOW DO YOU MAKE THE ENV FILE
 
-### How to run development server (this is what was in the old readme idk if we need to keep it)
+## Installation guide (setup and configuration details to install/run your code)
 
-[Frontend instructions](./frontend/README.md)
+### How to deploy using:
 
-[Backend instructions](./backend/README.md)
+Frontend: Netlify
 
-run each in a different terminal tab
+Backend: Render
+
+Frontend sends API calls to backend to fetch information.
+
+Using: Fetch from frontend and Flask Routes in Backend.
+
+### Steps for Deployment:
+
+1. **Create a New Service on Render**
+
+Go to Render’s dashboard and create a new Web Service.
+
+Link it to the GitHub repository
+
+2. **Configure Render Options:**
+
+In Render's menu, fill in the fields so that
+
+> **language**: python3
+
+> **root directory**: backend
+
+> **configure build command**: pip install -r "requirements.txt"
+
+This is to install all the dependencies that is required for our product
+
+> **start commands**: gunicorn .app
+
+This will make it run correctly.
+
+3. **Set Environment Variables on Render:**
+
+Go to the Environment tab in Render.
+
+Add all required environment variables, including MongoDB credentials.
+You can do this by opening the .env file in the backend folder then copy and pasting it into the prompt window.
+
+Then it is possible to start the deployment , monitor logs for any issues.
+
+> HELP WHEN I WAS WRITING THE GUIDE I GOT TO HERE AND IT FAILED AND I DON'T KNOW WHAT TO DO
+
+4. **Configure Frontend:**
+
+configure start command:
+
+> npm run start
+
+or
+
+> npm run dev
+
+install node nodules for our dependencies in the front end,
+
+> npm install
+
+all required packages should be in package.json
+
+### How to run development server
+
+1. Set up backend
+
+create a new terminal
+
+make sure you're in strawhatsvit/backend
+
+> $ cd backend
+
+install requirements
+
+> $ pip install -r 'requirements.txt'
+
+create a file called .env and get **contents from discord???? WE NEED TO CHANGE THIS**
+
+run this command to start the backend
+
+> $ python app.py
+
+or
+
+> $ python3 app.py
+
+2. Set up frontend
+
+start a new terminal
+
+make sure you're in strawhatsvit/frontend
+
+> $ cd frontend
+
+install packages
+
+> $ npm install
+
+run the development server
+
+> $ npm run dev
+
+NOTE: Make sure URL is 127.0.0.1 for backend-frontend sync
 
 ## Changelog
 
@@ -91,4 +190,4 @@ run each in a different terminal tab
 - Fixed bug where the calendar was not displaying correct data when moved/resized
 - Fixed bug where the calendar displayed days of the week correctly
 
-## Traceability matrix TO DO (what is this????)
+## Traceability matrix ADD LINK TO FILE
