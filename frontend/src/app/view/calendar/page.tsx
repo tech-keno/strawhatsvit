@@ -1,22 +1,11 @@
 "use client"; 
 
-import Calendar from "./calendar";
+import Calendar, { type Event } from "./calendar";
 import React, { useState } from 'react';
 
 
-// Use an alias for the Event type if you need to
-type CalendarEvent = {
-  day: "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday"
-  startTime: string
-  endTime: string
-  unit: string
-  lecturer: string
-  deliveryMode: "Virtual" | "In-Person"
-  classroom: string
-  course: string
-}
 export default function Home() {
-  const [calendarData, setCalendarData] = useState<CalendarEvent[]>([]);
+  const [calendarData, setCalendarData] = useState<Event[]>([]);
   const [hasCalendar, setHasCalendar] = useState(false);
 
 
@@ -58,7 +47,7 @@ export default function Home() {
         },
       });
       if (response.ok) {
-        const data: CalendarEvent[] = await response.json();  // Ensure the correct type here
+        const data: Event[] = await response.json();  // Ensure the correct type here
         setCalendarData(data); // Store the fetched data
         console.log(data);
 
@@ -75,7 +64,7 @@ export default function Home() {
     <div>
       {hasCalendar ? (
         <div>
-          <Calendar data={calendarData} />
+          <Calendar data={calendarData}/>
         </div>
       ) : (
         <div className="flex items-center justify-center p-4 flex-col gap-x-20 space-y-10">
