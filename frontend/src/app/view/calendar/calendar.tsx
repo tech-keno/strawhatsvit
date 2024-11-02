@@ -10,7 +10,7 @@ interface CalendarProps {
 type DayWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday"
 
 // Event object containing information for an event, stored in tags of it
-type Event = {
+export type Event = {
     day: DayWeek
     startTime: string
     endTime: string
@@ -89,11 +89,7 @@ function daypilotTimeToTime(daypilotTime: DayPilot.Date): {day: DayWeek, time: s
     return { day: dateToDayMap[day], time: time.slice(0, 5) };
 }
 
-function getCalendarEvents(events: DayPilot.EventData[]): Event[] {
-    return events.map(e => e.tags.event);
-}
-
-export default function Calendar( {data}: CalendarProps) {   
+export default function Calendar({data}: CalendarProps) {
     const colors = [
         {name: "Green", id: "#6aa84f"},
         {name: "Blue", id: "#3d85c6"},
@@ -284,6 +280,11 @@ export default function Calendar( {data}: CalendarProps) {
         });
     };
 
+    // creates an excel document from the frontend
+    const exportEventData = async () => {
+
+    }
+
     return (
         <div>
             <DayPilotCalendar
@@ -297,6 +298,12 @@ export default function Calendar( {data}: CalendarProps) {
                 onBeforeHeaderRender={onBeforeHeaderRender}
                 controlRef={setCalendar}
             />
+            <div className="absolute bottom-6 right-6 flex flex-col items-end pointer-events-auto">
+                <button className="px-4 py-2 font-semibold text-white transition-all duration-300 ease-in-out bg-gradient-to-r from-gray-800 to-gray-900 rounded-md shadow-md hover:from-gray-900 hover:to-black focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 active:scale-95"
+                    onClick={exportEventData}>
+                    Export
+                </button>
+            </div>
         </div>
     );
 }
