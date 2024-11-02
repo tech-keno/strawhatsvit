@@ -22,9 +22,11 @@ Strawhats proposes an easy to use, extendable, and reliable solution using an ad
 **Sprint 3**
 
 1. As a user, I should be able to securely log into the system and create an account for a specific user.
-2. As a user, I should be able to add tutorials, lectures, and other types of classes so that students can be allocated to a particular class without a clash.
-3. As a user, I should be able to generate an organized timetable based on data I’ve provided.
-   **Sprint 4**
+2. As a user, be able to manage (create, view and edit) all data easily within the web app. 
+3. As a user, I should be able to generate an organized timetable based on data I’ve provided. Students should be able to be allocated to classes without clashes.
+
+**Sprint 4**
+
 4. As a user, I should be able to move classes freely to different times and be assured that there are no clashes between students.
 5. As a user, I should be able to export the created timetable to an Excel or .cal file for easy use.
 
