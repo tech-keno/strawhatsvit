@@ -17,7 +17,7 @@ Strawhats proposes an easy to use, extendable, and reliable solution using an ad
 
 ## Demo (link to hosted project) TO BE DONE idk who
 
-## Features (user stories – organized in sprints)
+## Features
 
 **Sprint 3**
 
@@ -47,42 +47,48 @@ run each in a different terminal tab
 ## Changelog
 
 **Sprint 1**
-Design phase
+
+- Design phase
+
 **Sprint 2**
-Set Up Back-End Infrastructure Flask and MongoDB
-Set Up Front-End Framework React with Node.js framework
-Set Up Daypilot api component
+
+- Set Up Back-End Infrastructure Flask and MongoDB
+- Set Up Front-End Framework React with Node.js framework
+- Set Up Daypilot api component
+
 **Sprint 3**
-Dynamic Routing for Pages implemented
-Added file upload and csv reading from user story 2
-Navbar with Dropdown & Logo Button developed
-Login Window developed from user story 1
-Login Authentication developed from user story 1
-Fixed bug where authentication only works on calendar page
-Timetable Display Window developed from user story 3
-Default Timetable Window developed from user story 3
-Data Input Pages (Buildings, Personnel, Study) developed from user story 2
-Timetable Allocation Algorithm developed from user story 3
-Implemented GitHub Actions for Automated Testing
-Fixed multiple yml issues
-Changed MongoDB install
-Save button functionality developped from user story 2
+
+- Dynamic Routing for Pages implemented
+- Added file upload and CSV reading from user story 2
+- Navbar with Dropdown & Logo Button developed
+- Login Window developed from user story 1
+- Login Authentication developed from user story 1
+- Fixed bug where authentication only works on calendar page
+- Timetable Display Window developed from user story 3
+- Default Timetable Window developed from user story 3
+- Data Input Pages (Buildings, Personnel, Study) developed from user story 2
+- Timetable Allocation Algorithm developed from user story 3
+- Implemented GitHub Actions for Automated Testing
+- Fixed multiple YAML issues
+- Changed MongoDB installation
+- Save button functionality developed from user story 2
 
 **Sprint 4**
-Connected timetable with back-end data
-Updated data import pages based on client feedback
-Added delete buttons to data management pages
-Import data from CSV developed from user story 2
-Fixed various bugs with allocation algorithm
-Integrate allocation algorithm with webapp
-Clearer instructions and help panel for user developed based on feedback
-Fixed issues with generate function by adding input checking and mistake highlighting
-Fixed integration issues with daypilot api and backend connection
-UI to edit events developed from user story 4 (drag and drog, form to change data)
-Fixed calendar event display so it displays information in the correct format
-Fixed bug where drag and drop wouldn't update information properly and snap back if edited again
-Fixed bug where certain places would use "Monday" instead of 'monday' which broke daypilot
-Fixed bug where calendar was not displaying correct data when moved/resized
-Fixed bug where so calendar displayed days of the week correctly
+
+- Connected timetable with back-end data
+- Updated data import pages based on client feedback
+- Added delete buttons to data management pages
+- Import data from CSV developed from user story 2
+- Fixed various bugs with allocation algorithm
+- Integrated allocation algorithm with web application
+- Developed clearer instructions and help panel for users based on feedback
+- Fixed issues with the generate function by adding input checking and mistake highlighting
+- Resolved integration issues with DayPilot API and backend connection
+- Developed UI to edit events from user story 4 (drag and drop, form to change data)
+- Fixed calendar event display to show information in the correct format
+- Fixed bug where drag and drop wouldn't update information properly and would snap back if edited again
+- Fixed bug where certain places would use "Monday" instead of "monday," which broke DayPilot
+- Fixed bug where the calendar was not displaying correct data when moved/resized
+- Fixed bug where the calendar displayed days of the week correctly
 
 ## Traceability matrix TO DO (what is this????)
