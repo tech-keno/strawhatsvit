@@ -340,7 +340,7 @@ def generate():
                 'lecturer': row.get('Lecturer', ''),  
                 'deliveryMode': row.get('Delivery Mode', 'In-Person'), 
                 'classroom': row.get('Classroom', ''),  # 
-                'course': row.get('course', '')  #
+                'course': row.get('Course', '')  #
             }
             events.append(event)
 

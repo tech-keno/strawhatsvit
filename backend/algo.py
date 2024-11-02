@@ -37,6 +37,7 @@ def make_classes(df1, df2):
     #lecturer = df2["Lecturer"].to_list()
     classroom = df2["Classroom"].to_list()
     delivery_m = df2["Delivery Mode"].to_list()
+    course = df1["Course Name"].to_list()
     clas_dict = {}
 
     # Classes that don't have a length are just left blank
@@ -48,7 +49,7 @@ def make_classes(df1, df2):
             clas_dict[c]["length"] = -1
             clas_dict[c]["delivery_mode"] = ""
             clas_dict[c]["classroom"] = ""
-            #clas_dict[c]["lecturer"] = ""
+            clas_dict[c]["course"] = ""
             
         for student_enrol in range(len(df1[c])):  
             if df1[c][student_enrol] == "ENRL":
@@ -56,7 +57,7 @@ def make_classes(df1, df2):
                 clas_dict[c]["students"].add(student_names[student_enrol])
                 clas_dict[c]["delivery_mode"] = delivery_m[clas]
                 clas_dict[c]["classroom"] = classroom[clas]
-                #clas_dict[c]["lecturer"] = lecturer[clas]
+                clas_dict[c]["course"] = course[student_enrol]
     return clas_dict
 
 """
@@ -125,6 +126,7 @@ def algo(df1, df2, lecturers):
         day,  hour = convert_index_to_time(time_index)
         for clas in timetable_dict[time_index][0]:
             if clas not in used_classes:
+
                 rows.append({
                     'Day': day,
                     'Start Time': convert_num_time(hour),
@@ -132,7 +134,9 @@ def algo(df1, df2, lecturers):
                     'Unit': (clas),
                     'Classroom': clas_dict[clas]["classroom"],
                     'Lecturer': lect_to_classes[clas],
-                    'Delivery Mode': clas_dict[clas]["delivery_mode"]
+                    'Delivery Mode': clas_dict[clas]["delivery_mode"],
+                    "Course": clas_dict[clas]["course"]
+                    
                 })
                 used_classes.add(clas)
     
