@@ -29,7 +29,6 @@ export async function middleware(request: NextRequest) {
 
 async function checkAuth(request: NextRequest): Promise<boolean> {
     const cookie = request.headers.get('cookie') || '';
-    console.log(cookie)
 
     try {
         const response = await axios.get('http://127.0.0.1:5000/check-auth', { headers: { Cookie: cookie } });

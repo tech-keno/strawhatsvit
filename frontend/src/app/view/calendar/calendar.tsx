@@ -221,7 +221,6 @@ export default function Calendar( {data}: CalendarProps) {
         // updating html based on new data
         onBeforeEventRender({ data: args.e.data, control: args.control });
         calendar?.events.update(args.e);
-        console.log(args.control.columns);
     };
 
     // called whenever an event is resized
