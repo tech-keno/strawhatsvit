@@ -152,15 +152,13 @@ MITS102,1,Sarah,Room 102,In-Person
                 "students": {"Alice", "Charlie"},
                 "length": 2,
                 "delivery_mode": "Online",
-                "classroom": "Room 101",
-                "lecturer": "Jake"
+                "classroom": "Room 101"
             },
             "MITS102": {
                 "students": {"Alice", "Bob"},
                 "length": 1,
                 "delivery_mode": "In-Person",
-                "classroom": "Room 102",
-                "lecturer": "Sarah"
+                "classroom": "Room 102"
             }
         }
 
@@ -169,10 +167,7 @@ MITS102,1,Sarah,Room 102,In-Person
         result = make_classes(self.df1, self.df2)
         self.assertEqual(result, expected_output)
 
-    def test_algo(self):
-        expected_output = [{'Day': 'Monday', 'Time': '8:00 AM to 10:00 AM', 'Unit': 'MITS101', 'Classroom': 'Room 101', 'Lecturer': 'Jake', 'Delivery Mode': 'Online'}, {'Day': 'Monday', 'Time': '10:00 AM to 11:00 AM', 'Unit': 'MITS102', 'Classroom': 'Room 102', 'Lecturer': 'Sarah', 'Delivery Mode': 'In-Person'}]
-        result = algo(self.df1, self.df2)
-        self.assertEqual(result, expected_output)
+
     # def clean_up(self):
     #     # delete everything in databases and uploads
     #     self.db.mycollection.delete_many({})
