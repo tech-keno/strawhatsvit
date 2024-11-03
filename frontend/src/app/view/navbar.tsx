@@ -15,7 +15,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:5000/logout', { withCredentials: true });
+      const response = await axios.get('https://strawhatsvit-3.onrender.com/logout', { withCredentials: true });
       if (response.status === 200) {
         window.location.href = '/login'; // Redirect to login page after logout
       }

@@ -11,7 +11,7 @@ export default function Students() {
     const [selectedRowId, setSelectedRowId] = useState(null);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5000/documents/students')
+        fetch('https://strawhatsvit-3.onrender.com/documents/students')
             .then(response => response.json())
             .then(data => {
                 // Ensure units are initialized as an array
@@ -47,7 +47,7 @@ export default function Students() {
     };
 
     const saveData = () => {
-        fetch('http://127.0.0.1:5000/document/students', {
+        fetch('https://strawhatsvit-3.onrender.com/document/students', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export default function Students() {
             if (data.message) {
                 alert('Data saved successfully!');
                 // Optionally refresh data
-                fetch('http://127.0.0.1:5000/documents/students')
+                fetch('https://strawhatsvit-3.onrender.com/documents/students')
                     .then(response => response.json())
                     .then(data => {
                         const updatedData = data.map(item => ({
@@ -78,7 +78,7 @@ export default function Students() {
     };
 
     const deleteRow = (rowId) => {
-        fetch(`http://127.0.0.1:5000/document/students/${rowId}`, {
+        fetch(`https://strawhatsvit-3.onrender.com/document/students/${rowId}`, {
             method: 'DELETE',
         })
         .then(response => {

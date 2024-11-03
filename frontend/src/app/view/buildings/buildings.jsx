@@ -11,7 +11,7 @@ export default function Buildings() {
     const [selectedRowId, setSelectedRowId] = useState(null);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5000/documents/building')
+        fetch('https://strawhatsvit-3.onrender.com/documents/building')
             .then(response => response.json())
             .then(data => {
                 const updatedData = data.map(item => ({
@@ -46,7 +46,7 @@ export default function Buildings() {
     };
 
     const deleteRow = (rowId) => {
-        fetch(`http://127.0.0.1:5000/document/building/${rowId}`, {
+        fetch(`https://strawhatsvit-3.onrender.com/document/building/${rowId}`, {
             method: 'DELETE',
         })
         .then(response => {
@@ -67,7 +67,7 @@ export default function Buildings() {
             rooms: Array.isArray(row.rooms) ? row.rooms : row.rooms.split(', ')
         }));
 
-        fetch('http://127.0.0.1:5000/document/building', {
+        fetch('https://strawhatsvit-3.onrender.com/document/building', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -11,7 +11,7 @@ export default function Staff() {
     const [selectedRowId, setSelectedRowId] = useState(null);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5000/documents/staff')
+        fetch('https://strawhatsvit-3.onrender.com/documents/staff')
             .then(response => response.json())
             .then(data => {
                 // Ensure unitsCode is initialized as an array
@@ -48,7 +48,7 @@ export default function Staff() {
     };
 
     const deleteRow = (rowId) => {
-        fetch(`http://127.0.0.1:5000/document/staff/${rowId}`, {
+        fetch(`https://strawhatsvit-3.onrender.com/document/staff/${rowId}`, {
             method: 'DELETE',
         })
         .then(response => {
@@ -64,7 +64,7 @@ export default function Staff() {
     };
 
     const saveData = () => {
-        fetch('http://127.0.0.1:5000/document/staff', {
+        fetch('https://strawhatsvit-3.onrender.com/document/staff', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ export default function Staff() {
             if (data.message) {
                 alert('Data saved successfully!');
                 // Optionally refresh data
-                fetch('http://127.0.0.1:5000/documents/staff')
+                fetch('https://strawhatsvit-3.onrender.com/documents/staff')
                     .then(response => response.json())
                     .then(data => {
                         const updatedData = data.map(item => ({

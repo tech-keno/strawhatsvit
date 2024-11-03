@@ -17,7 +17,7 @@ export default function Home() {
       formData.append("file", selectedFile); // Append the selected file to FormData
 
       try {
-        const response = await fetch("http://127.0.0.1:5000/upload", {
+        const response = await fetch("https://strawhatsvit-3.onrender.com/upload", {
           method: "POST",
           body: formData,
         });
@@ -39,7 +39,7 @@ export default function Home() {
 
   const createCalendar = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:5000/generate', {
+      const response = await fetch('https://strawhatsvit-3.onrender.com/generate', {
         method: 'GET',
         credentials: 'include',
         headers: {
