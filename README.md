@@ -40,9 +40,24 @@ Strawhats proposes an easy to use, extendable, and reliable solution using an ad
 
 ## System Requirements (Tools/Database and their Versions)
 
-NPM node package manager
-PLEASE SOMEONE CHECK THIS BECAUSE I AM NOT SURE
-ALSO HOW DO YOU SET UP MONGODB AND HOW DO YOU MAKE THE ENV FILE
+To run this project successfully, ensure your system meets the following requirements:
+
+### Software Versions
+- **Node.js**: v22.5.1
+- **npm**: v10.8.2
+- **Python**: v3.10.12
+- **MongoDB**: v7.0.15
+  
+### Recommended Development Tools
+- **Git**: For version control and cloning the repository.
+- **Visual Studio Code** (or another IDE): For editing code.
+
+### Browser Compatibility
+The app is best viewed in the latest versions of Chrome, Firefox, or Safari.
+
+---
+
+Please install and configure these tools before running the project to avoid compatibility issues.
 
 ## Installation guide (setup and configuration details to install/run your code)
 
