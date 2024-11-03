@@ -16,7 +16,7 @@ This project is a timetabling agent intended for staff members of a college to u
 
 Strawhats proposes an easy to use, extendable, and reliable solution using an advanced tech stack. Simply upload your information from csv files or manually input data in our intuitive data management pages. Once all your information is in our system, click generate and a timetable will be created! Drag and drop and edit the events as much as you need with our sleek calendar interface. Export your creation effortlessly as a csv file, no training needed.
 
-## Demo (link to hosted project)
+## Demo [(link to hosted project)](https://strawhatsvit-william.vercel.app/login)
 
 ## Features
 
