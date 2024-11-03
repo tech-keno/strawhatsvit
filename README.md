@@ -195,4 +195,25 @@ NOTE: Make sure URL is 127.0.0.1 for backend-frontend sync
 - Fixed bug where the calendar was not displaying correct data when moved/resized
 - Fixed bug where the calendar displayed days of the week correctly
 
-## Traceability Matrix ADD LINK TO FILE
+## Traceability Matrix
+
+| Use case ID | User Story                                                                                                   | Test Cases | Test Result | Notes                                               |
+|-------------|--------------------------------------------------------------------------------------------------------------|------------|-------------|-----------------------------------------------------|
+| 1           | As a user, I can securely log into the system and create an account for a specific user.                     | TR-F-7     | Fail        | Feature not implemented                             |
+|             |                                                                                                              | TR-F-8     | Pass        |                                                     |
+|             |                                                                                                              | TR-F-9     | Pass        |                                                     |
+|             |                                                                                                              | TR-B-1     | Pass        |                                                     |
+|             |                                                                                                              | TR-B-2     | Pass        |                                                     |
+| 2           | As a user, I can manage (view and edit) all data easily within the web app.                                  | TR-F-4     | Pass        |                                                     |
+|             |                                                                                                              | TR-F-5     | Pass        |                                                     |
+|             |                                                                                                              | TR-B-3     | Pass        |                                                     |
+|             |                                                                                                              | TR-B-4     | Pass        |                                                     |
+|             |                                                                                                              | TR-B-5     | Pass        |                                                     |
+|             |                                                                                                              | TR-B-4     | Pass        |                                                     |
+|             |                                                                                                              | TR-B-7     | Pass        |                                                     |
+| 3           | As a user, I can generate an organized timetable based on data I’ve provided. Students should be allocated to classes without clashes. | TR-F-1     | Pass        |                                                     |
+|             |                                                                                                              | TR-B-8     | Pass        |                                                     |
+| 4           | As a user, I can move classes freely to different times and be assured that there are no clashes between students. | TR-F-2     | Pass        |                                                     |
+|             |                                                                                                              | TR-F-3     | Pass        |                                                     |
+| 5           | As a user, I can export the created timetable to an Excel or .cal file for easy use.                         | TR-F-6     | Fail        |                                                     |
+| 6           | As a user, I can use multi-factor authentication to access the website.                                      |            |             | Feature was not implemented due to low priority and time constraints |
