@@ -63,7 +63,7 @@ Please install and configure these tools before running the project to avoid com
 
 ### How to deploy using:
 
-Frontend: Netlify
+Frontend: Vercel
 
 Backend: Render
 
