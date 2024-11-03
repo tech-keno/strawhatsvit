@@ -91,6 +91,39 @@ function daypilotTimeToTime(daypilotTime: DayPilot.Date): {day: DayWeek, time: s
 }
 
 export default function Calendar({data}: CalendarProps) {
+    // retreiving information from backend to use as options in dropdown menus
+    const [courses, setCourses] = useState<{name: string, id: string}[]>();
+    useEffect(() => {
+        fetch('http://127.0.0.1:5000/documents/courses')
+            .then(response => response.json())
+            .then(data => setCourses(data.map((e: any) => ({name: e.courseName, id: e.courseName}))))
+            .catch(error => console.error('Error fetching data:', error));
+    }, []);
+
+    const [units, setUnits] = useState<{name: string, id: string}[]>();
+    useEffect(() => {
+        fetch('http://127.0.0.1:5000/documents/units')
+            .then(response => response.json())
+            .then(data => setUnits(data.map((e: any) => ({name: e.unitName, id: e.unitName}))))
+            .catch(error => console.error('Error fetching data:', error));
+    }, []);
+
+    const [classRooms, setClassRooms] = useState<{name: string, id: string}[]>();
+    useEffect(() => {
+        fetch('http://127.0.0.1:5000/documents/building')
+            .then(response => response.json())
+            .then(data => setClassRooms(data.flatMap((e: any) => e.rooms).map((e: string) => ({name: e, id: e}))))
+            .catch(error => console.error('Error fetching data:', error));
+    }, []);
+
+    const [lecturers, setLecturers] = useState<{name: string, id: string}[]>();
+    useEffect(() => {
+        fetch('http://127.0.0.1:5000/documents/staff')
+            .then(response => response.json())
+            .then(data => setLecturers(data.map((e: any) => ({name: e.name, id: e.name}))))
+            .catch(error => console.error('Error fetching data:', error));
+    }, []);
+
     const colors = [
         {name: "Green", id: "#6aa84f"},
         {name: "Blue", id: "#3d85c6"},
@@ -109,13 +142,13 @@ export default function Calendar({data}: CalendarProps) {
     ];
 
     const eventForm = [
-        {name: "Unit", id: "unit", type: "text"},
+        {name: "Unit", id: "unit", type: "select", options: units},
         {name: "Start Time", id: "startTime", timeInterval: 15, type: "time"},
         {name: "End Time", id: "endTime", timeInterval: 15, type: "time"},
-        {name: "Lecturer", id: "lecturer", type: "text"},
+        {name: "Lecturer", id: "lecturer", type: "select", options: lecturers},
         {name: "Delivery Mode", id: "deliveryMode", type: "select", options: deliveryMode},
-        {name: "Classroom", id: "classroom", type: "text"},
-        {name: "Course", id: "course", type: "text"},
+        {name: "Classroom", id: "classroom", type: "select", options: classRooms},
+        {name: "Course", id: "course", type: "select", options: courses},
     ];
 
     // create useState hook
@@ -132,9 +165,6 @@ export default function Calendar({data}: CalendarProps) {
         e.data.end = timeToDaypilotTime(modal.result.endTime, modal.result.day);
 
         calendar?.events.update(e);
-        
-        // extracts all the event data from the calendar and prints to console
-        console.log(calendar?.events.list.map(e => e.tags.event))
     };
 
     // form created to change event colour
@@ -147,8 +177,8 @@ export default function Calendar({data}: CalendarProps) {
         if (modal.canceled) { return; }
 
         e.data.backColor = modal.result.backColor;
-        calendar?.events.update(e);
 
+        calendar?.events.update(e);
     }
 
     // menu that pops up when clicking the little square on the top right of events
@@ -216,7 +246,6 @@ export default function Calendar({data}: CalendarProps) {
         args.e.data.tags.event.day = daypilotTimeToTime(args.newStart).day;
 
         // updating html based on new data
-        onBeforeEventRender({ data: args.e.data, control: args.control });
         calendar?.events.update(args.e);
     };
 
@@ -227,7 +256,6 @@ export default function Calendar({data}: CalendarProps) {
         args.e.data.tags.event.day = daypilotTimeToTime(args.newStart).day;
 
         // updating html based on new data
-        onBeforeEventRender({ data: args.e.data, control: args.control });
         calendar?.events.update(args.e);
     };
 
