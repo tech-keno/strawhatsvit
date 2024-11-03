@@ -1,3 +1,4 @@
+
 # Table of contents
 
 - Project Background/Overview
@@ -72,7 +73,7 @@ In Render's menu, fill in the fields so that
 
 This is to install all the dependencies that is required for our product
 
-> **start commands**: gunicorn .app
+> **start commands**: gunicorn app:app
 
 This will make it run correctly.
 
@@ -85,9 +86,11 @@ You can do this by opening the .env file in the backend folder then copy and pas
 
 Then it is possible to start the deployment , monitor logs for any issues.
 
-> HELP WHEN I WAS WRITING THE GUIDE I GOT TO HERE AND IT FAILED AND I DON'T KNOW WHAT TO DO
-
 4. **Configure Frontend:**
+
+Go to Netlify and start deploying a new web service
+
+Connect to your version of this repo
 
 configure start command:
 
