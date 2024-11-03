@@ -156,10 +156,10 @@ export default function Calendar({data}: CalendarProps) {
 
     // form created when trying to edit an event
     const editEvent = async (e: DayPilot.Event) => {
-        // update information based on form
-        var modal = await DayPilot.Modal.form(eventForm, e.data.tags.event);
+        let modal = await DayPilot.Modal.form(eventForm, e.data.tags.event);
         if (modal.canceled) { return; }
 
+        // update information based on form
         e.data.tags.event = modal.result;
         e.data.start = timeToDaypilotTime(modal.result.startTime, modal.result.day);
         e.data.end = timeToDaypilotTime(modal.result.endTime, modal.result.day);
@@ -173,7 +173,7 @@ export default function Calendar({data}: CalendarProps) {
             {name: "Color", id: "backColor", type: "select", options: colors}
         ];
 
-        var modal = await DayPilot.Modal.form(form, e.data);
+        let modal = await DayPilot.Modal.form(form, e.data);
         if (modal.canceled) { return; }
 
         e.data.backColor = modal.result.backColor;
@@ -278,8 +278,6 @@ export default function Calendar({data}: CalendarProps) {
 
         calendar.update({startDate, events});
 
-        // update tag information when an event is moved
-
     }, [calendar]);
 
     // when selecting a time range, creat new event (maybe remove)
@@ -295,7 +293,7 @@ export default function Calendar({data}: CalendarProps) {
             course: ""
         }
 
-        var modal = await DayPilot.Modal.form(eventForm, e);
+        let modal = await DayPilot.Modal.form(eventForm, e);
         if (modal.canceled) { return; }
 
         calendar?.events.add({
