@@ -1,0 +1,22 @@
+Unit,Time,Classroom,Delivery Mode
+MITS4001,1,G10,In-Person
+MITS4002,1,G9,In-Person
+MITS4003,2,G8,In-Person
+MITS4004,1,G7,Virtual
+MITS5001,1,G6,Virtual
+MITS5002,1,G5,In-Person
+MITS5003,2,G4,Virtual
+MITS5004,2,G1,In-Person
+MITS5501,2,G2,In-Person
+MITS5502,2,G3,Virtual
+MITS5503,1,A12,In-Person
+MITS5505,3,A11,In-Person
+MITS5507,1,A11,Virtual
+MITS5509,2,A11,In-Person
+MITS6001,2,A10,Virtual
+MITS6002,1,A9,In-Person
+MITS6004,1,A8,Virtual
+MITS6005,2,A5,In-Person
+MITS6011,2,A4,In-Person
+MITS6500,1,No classroom available,Virtual
+MITS5512,2,No classroom available,In-Person

@@ -1,9 +1,9 @@
-import Buildings from './buildings.jsx'
+import Students from './students.jsx'
 
 export default function Home() {
   return (
     <div>
-      <Buildings/>
+      <Students/>
     </div>
   )
 }

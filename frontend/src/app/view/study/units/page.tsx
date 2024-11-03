@@ -1,10 +1,9 @@
-import Login from "./login"
+import Units from './units.jsx'
 
 export default function Home() {
     return (
         <div>
-            {/* <p>login</p> */}
-            <Login/>
+            <Units/>
         </div>
     )
   }

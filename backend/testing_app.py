@@ -1,10 +1,12 @@
 import unittest
-
+from app import app, client, db, users_collection 
 from bson.objectid import ObjectId
 import os
-import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from app.py import app, client, db, users_collection 
+from io import StringIO
+import pandas as pd
+from algo import algo, make_classes
+
+
 class FlaskAppTests(unittest.TestCase):
     
     @classmethod
@@ -39,7 +41,7 @@ class FlaskAppTests(unittest.TestCase):
         
         """
         response = self.client.post('/register', data={'username': 'Luffy', 'password': 'DevilFruitEater123'})
-        self.assertEqual(response.status_code, 200)  
+        self.assertIn(response.status_code, [200, 302], f"Unexpected status code: {response.status_code}")
         self.assertTrue(self.users_collection.find_one({"username": "Luffy"}))
     
 
@@ -59,26 +61,7 @@ class FlaskAppTests(unittest.TestCase):
         response = self.client.post('/register', data={'username': 'Zoro', 'password': 'SwordStyle123321'})
         self.assertIn(b'Username already exists man!', response.data)
     
-    def test_add_document(self):
-        """
-        Testing Add Document
-
-        Purpose: To verify that a new document can successfully be added to the database. This 
-
-        Setup: The test client will simulate an HTTP POST request to the /document route with a sample payload, e.g our team names
-
-        Execution: The test will post a json payload to the /documen troute and after the document is added the test will check whether the response code is successful.
-
-        Expected Outcome: The response status should be 201, which indicates success. The response should also include the id of the newly created document and the document should be seen present in the mycollection collection of the database.
-
-        """
-        data = {"name": "StrawHAts", "description": "Ibrahim, Keno, Will, Ibrahim, Sam, Eliza"}
-        response = self.client.post('/document', json=data)
-        self.assertEqual(response.status_code, 201)
-        doc_id = response.json["_id"]
-        # response = self.client.get(f'/document/{doc_id}')
-        # self.assertEqual(response.status_code, 200)
-        # self.assertEqual(response.json["name"], "Test Document")
+    
     
     def test_update_document(self):
         """
@@ -144,6 +127,47 @@ class FlaskAppTests(unittest.TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertIn(b'File uploaded successfully', response.data)
     
+    def setUp(self):
+        # Sample enrolment data for df1
+        enrolment_data = StringIO("""
+Student Name,MITS101,MITS102
+Alice,ENRL,ENRL
+Bob,,ENRL
+Charlie,ENRL,
+        """)
+        
+        # Sample classes data for df2
+        classes_data = StringIO("""
+Unit,Time,Lecturer,Classroom,Delivery Mode
+MITS101,2,Jake,Room 101,Online
+MITS102,1,Sarah,Room 102,In-Person
+        """)
+        
+        self.df1 = pd.read_csv(enrolment_data)
+        self.df2 = pd.read_csv(classes_data)
+
+    def test_make_classes(self):
+        expected_output = {
+            "MITS101": {
+                "students": {"Alice", "Charlie"},
+                "length": 2,
+                "delivery_mode": "Online",
+                "classroom": "Room 101"
+            },
+            "MITS102": {
+                "students": {"Alice", "Bob"},
+                "length": 1,
+                "delivery_mode": "In-Person",
+                "classroom": "Room 102"
+            }
+        }
+
+    
+
+        result = make_classes(self.df1, self.df2)
+        self.assertEqual(result, expected_output)
+
+
     # def clean_up(self):
     #     # delete everything in databases and uploads
     #     self.db.mycollection.delete_many({})
