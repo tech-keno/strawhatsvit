@@ -91,23 +91,18 @@ Then it is possible to start the deployment , monitor logs for any issues.
 
 4. **Configure Frontend:**
 
-Go to Netlify and start deploying a new web service
+Go to Vercel and start deploying a new Project 
 
 Connect to your version of this repo
 
-configure start command:
+configure to the frontend folder
 
-> npm run start
-
-or
-
-> npm run dev
-
-install node nodules for our dependencies in the front end,
-
-> npm install
+Vercel will
+install node nodules for our dependencies in the front end
 
 all required packages should be in package.json
+
+Connect to the vercel website!
 
 ### How to run development server
 
