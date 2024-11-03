@@ -208,7 +208,7 @@ NOTE: Make sure URL is 127.0.0.1 for backend-frontend sync
 - Fixed bug where drag and drop wouldn't update information properly and would snap back if edited again
 - Fixed bug where certain places would use "Monday" instead of "monday," which broke DayPilot
 - Fixed bug where the calendar was not displaying correct data when moved/resized
-- Fixed bug where the calendar displayed days of the week correctly
+- Fixed bug where the calendar displayed days of the week incorrectly
 
 ## Traceability Matrix
 
