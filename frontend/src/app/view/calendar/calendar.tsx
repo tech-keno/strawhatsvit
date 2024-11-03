@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { DayPilot, DayPilotCalendar } from "@daypilot/daypilot-lite-react";
+import ExcelJS from 'exceljs';
 
 interface CalendarProps {
     data: Event[];  // You can specify the type if you know the structure of your data
@@ -10,7 +11,7 @@ interface CalendarProps {
 type DayWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday"
 
 // Event object containing information for an event, stored in tags of it
-type Event = {
+export type Event = {
     day: DayWeek
     startTime: string
     endTime: string
@@ -89,11 +90,40 @@ function daypilotTimeToTime(daypilotTime: DayPilot.Date): {day: DayWeek, time: s
     return { day: dateToDayMap[day], time: time.slice(0, 5) };
 }
 
-function getCalendarEvents(events: DayPilot.EventData[]): Event[] {
-    return events.map(e => e.tags.event);
-}
+export default function Calendar({data}: CalendarProps) {
+    // retreiving information from backend to use as options in dropdown menus
+    const [courses, setCourses] = useState<{name: string, id: string}[]>();
+    useEffect(() => {
+        fetch('http://127.0.0.1:5000/documents/courses')
+            .then(response => response.json())
+            .then(data => setCourses(data.map((e: any) => ({name: e.courseName, id: e.courseName}))))
+            .catch(error => console.error('Error fetching data:', error));
+    }, []);
 
-export default function Calendar( {data}: CalendarProps) {   
+    const [units, setUnits] = useState<{name: string, id: string}[]>();
+    useEffect(() => {
+        fetch('http://127.0.0.1:5000/documents/units')
+            .then(response => response.json())
+            .then(data => setUnits(data.map((e: any) => ({name: e.unitName, id: e.unitName}))))
+            .catch(error => console.error('Error fetching data:', error));
+    }, []);
+
+    const [classRooms, setClassRooms] = useState<{name: string, id: string}[]>();
+    useEffect(() => {
+        fetch('http://127.0.0.1:5000/documents/building')
+            .then(response => response.json())
+            .then(data => setClassRooms(data.flatMap((e: any) => e.rooms).map((e: string) => ({name: e, id: e}))))
+            .catch(error => console.error('Error fetching data:', error));
+    }, []);
+
+    const [lecturers, setLecturers] = useState<{name: string, id: string}[]>();
+    useEffect(() => {
+        fetch('http://127.0.0.1:5000/documents/staff')
+            .then(response => response.json())
+            .then(data => setLecturers(data.map((e: any) => ({name: e.name, id: e.name}))))
+            .catch(error => console.error('Error fetching data:', error));
+    }, []);
+
     const colors = [
         {name: "Green", id: "#6aa84f"},
         {name: "Blue", id: "#3d85c6"},
@@ -112,13 +142,13 @@ export default function Calendar( {data}: CalendarProps) {
     ];
 
     const eventForm = [
-        {name: "Unit", id: "unit", type: "text"},
+        {name: "Unit", id: "unit", type: "select", options: units},
         {name: "Start Time", id: "startTime", timeInterval: 15, type: "time"},
         {name: "End Time", id: "endTime", timeInterval: 15, type: "time"},
-        {name: "Lecturer", id: "lecturer", type: "text"},
+        {name: "Lecturer", id: "lecturer", type: "select", options: lecturers},
         {name: "Delivery Mode", id: "deliveryMode", type: "select", options: deliveryMode},
-        {name: "Classroom", id: "classroom", type: "text"},
-        {name: "Course", id: "course", type: "text"},
+        {name: "Classroom", id: "classroom", type: "select", options: classRooms},
+        {name: "Course", id: "course", type: "select", options: courses},
     ];
 
     // create useState hook
@@ -135,9 +165,6 @@ export default function Calendar( {data}: CalendarProps) {
         e.data.end = timeToDaypilotTime(modal.result.endTime, modal.result.day);
 
         calendar?.events.update(e);
-        
-        // extracts all the event data from the calendar and prints to console
-        console.log(calendar?.events.list.map(e => e.tags.event))
     };
 
     // form created to change event colour
@@ -150,8 +177,8 @@ export default function Calendar( {data}: CalendarProps) {
         if (modal.canceled) { return; }
 
         e.data.backColor = modal.result.backColor;
-        calendar?.events.update(e);
 
+        calendar?.events.update(e);
     }
 
     // menu that pops up when clicking the little square on the top right of events
@@ -219,9 +246,7 @@ export default function Calendar( {data}: CalendarProps) {
         args.e.data.tags.event.day = daypilotTimeToTime(args.newStart).day;
 
         // updating html based on new data
-        onBeforeEventRender({ data: args.e.data, control: args.control });
         calendar?.events.update(args.e);
-        console.log(args.control.columns);
     };
 
     // called whenever an event is resized
@@ -231,7 +256,6 @@ export default function Calendar( {data}: CalendarProps) {
         args.e.data.tags.event.day = daypilotTimeToTime(args.newStart).day;
 
         // updating html based on new data
-        onBeforeEventRender({ data: args.e.data, control: args.control });
         calendar?.events.update(args.e);
     };
 
@@ -285,6 +309,45 @@ export default function Calendar( {data}: CalendarProps) {
         });
     };
 
+    // Creates an excel document from the frontend
+    const exportEventData = async () => {
+        if (!calendar) {
+            return;
+        }
+        
+        // Getting event data from the calendar
+        const eventData = calendar.events.list.map(e => e.tags.event);
+
+        // Create a new workbook
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Sheet1');
+      
+        // Add headers
+        worksheet.addRow(["Course", "Unit", "Start Time", "End Time", "Day", "Classroom", "Lecturer", "Delivery Mode"]);
+      
+        // Add data
+        eventData.forEach(e => {
+          worksheet.addRow([e.course, e.unit, e.startTime, e.endTime, e.day, e.classroom, e.lecturer, e.deliveryMode]);
+        });
+      
+        // Generate buffer
+        const buffer = await workbook.xlsx.writeBuffer();
+        
+        // Convert buffer to blob and create url
+        const url = window.URL.createObjectURL(new Blob([buffer], { 
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        }));
+
+        // Create a document with the url to download
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'calendar.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
+
     return (
         <div>
             <DayPilotCalendar
@@ -298,6 +361,12 @@ export default function Calendar( {data}: CalendarProps) {
                 onBeforeHeaderRender={onBeforeHeaderRender}
                 controlRef={setCalendar}
             />
+            <div className="absolute bottom-6 right-6 flex flex-col items-end pointer-events-auto">
+                <button className="px-4 py-2 font-semibold text-white transition-all duration-300 ease-in-out bg-gradient-to-r from-gray-800 to-gray-900 rounded-md shadow-md hover:from-gray-900 hover:to-black focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 active:scale-95"
+                    onClick={exportEventData}>
+                    Export
+                </button>
+            </div>
         </div>
     );
 }

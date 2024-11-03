@@ -130,10 +130,10 @@ class FlaskAppTests(unittest.TestCase):
     def setUp(self):
         # Sample enrolment data for df1
         enrolment_data = StringIO("""
-Student Name,MITS101,MITS102
-Alice,ENRL,ENRL
-Bob,,ENRL
-Charlie,ENRL,
+Student Name,MITS101,MITS102,Course Name
+Alice,ENRL,ENRL,Bachelor of Science
+Bob,,ENRL,Bachelor of Science
+Charlie,ENRL,,Bachelor of Science
         """)
         
         # Sample classes data for df2
@@ -152,13 +152,15 @@ MITS102,1,Sarah,Room 102,In-Person
                 "students": {"Alice", "Charlie"},
                 "length": 2,
                 "delivery_mode": "Online",
-                "classroom": "Room 101"
+                "classroom": "Room 101",
+                "course": "Bachelor of Science"
             },
             "MITS102": {
                 "students": {"Alice", "Bob"},
                 "length": 1,
                 "delivery_mode": "In-Person",
-                "classroom": "Room 102"
+                "classroom": "Room 102",
+                "course": "Bachelor of Science"
             }
         }
 
