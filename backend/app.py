@@ -14,7 +14,7 @@ import csv
 app = Flask(__name__)
 
 # Enable Cors so we can communicate with frontend
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "https://strawhatsvit-w8j2.vercel.app/"}})
 
 # Configure session management to use the filesystem
 app.config['SESSION_TYPE'] = 'filesystem'

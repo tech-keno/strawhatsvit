@@ -23,12 +23,13 @@ export default function Login() {
     event.preventDefault();
 
     try {
-      const response = await axios.post('http://127.0.0.1:5000/login', {
+      const response = await axios.post('https://strawhatsvit-3.onrender.com/login', {
         username,
         password,
       }, { withCredentials: true });
 
       if (response.status === 200) {
+        console.log(response.status)
         setResponseMessage('Login successful');
         window.location.href = '/view/calendar'; 
       }
