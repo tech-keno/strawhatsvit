@@ -48,7 +48,7 @@ ALSO HOW DO YOU SET UP MONGODB AND HOW DO YOU MAKE THE ENV FILE
 
 ### How to deploy using:
 
-Frontend: Netlify
+Frontend: Vercel
 
 Backend: Render
 
