@@ -118,7 +118,9 @@ install requirements
 
 > $ pip install -r 'requirements.txt'
 
-create a file called .env and get **contents from discord???? WE NEED TO CHANGE THIS**
+create a file called .env and put in key
+
+key gotten from creating one at https://www.mongodb.com/
 
 run this command to start the backend
 
