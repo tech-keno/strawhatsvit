@@ -281,7 +281,7 @@ export default function Calendar({data}: CalendarProps) {
         });
     };
 
-    // creates an excel document from the frontend
+    // Creates an excel document from the frontend
     const exportEventData = async () => {
         if (!calendar) {
             return;
@@ -295,12 +295,11 @@ export default function Calendar({data}: CalendarProps) {
         const worksheet = workbook.addWorksheet('Sheet1');
       
         // Add headers
-        const headers = Object.keys(eventData[0]);
-        worksheet.addRow(headers);
+        worksheet.addRow(["Course", "Unit", "Start Time", "End Time", "Day", "Classroom", "Lecturer", "Delivery Mode"]);
       
         // Add data
-        eventData.forEach(row => {
-          worksheet.addRow(Object.values(row));
+        eventData.forEach(e => {
+          worksheet.addRow([e.course, e.unit, e.startTime, e.endTime, e.day, e.classroom, e.lecturer, e.deliveryMode]);
         });
       
         // Generate buffer
