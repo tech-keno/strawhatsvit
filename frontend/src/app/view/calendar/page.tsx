@@ -49,7 +49,6 @@ export default function Home() {
       if (response.ok) {
         const data: Event[] = await response.json();  // Ensure the correct type here
         setCalendarData(data); // Store the fetched data
-        console.log(data);
 
         setHasCalendar(true);  // Set flag to show the calendar
       } else {
