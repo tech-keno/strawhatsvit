@@ -1,22 +1,22 @@
 
 # Table of contents
 
-- Project Background/Overview
-- Demo
-- Features
-- Documentation
-- System Requirements
-- Installation Guide
-- Changelog
-- Traceability Matrix
+- [Project Background/Overview](#project-backgroundoverview)
+- [Demo](#demo-link-to-hosted-project)
+- [Features](#features)
+- [Documentation](#documentation)
+- [System Requirements](#system-requirements-toolsdatabase-and-their-versions)
+- [Installation Guide](#installation-guide-setup-and-configuration-details-to-installrun-your-code)
+- [Changelog](#changelog)
+- [Traceability Matrix](#traceability-matrix)
 
-## Project background/overview
+## Project Background/Overview
 
 This project is a timetabling agent intended for staff members of a college to use manage subject, personnel and location data and allocate class timetables based on the available data. Our client, Victorian Institute of Technologies (VIT) requested a web application to streamline the process of creating timetables.
 
 Strawhats proposes an easy to use, extendable, and reliable solution using an advanced tech stack. Simply upload your information from csv files or manually input data in our intuitive data management pages. Once all your information is in our system, click generate and a timetable will be created! Drag and drop and edit the events as much as you need with our sleek calendar interface. Export your creation effortlessly as a csv file, no training needed.
 
-## Demo (link to hosted project) TO BE DONE idk who
+## Demo (link to hosted project)
 
 ## Features
 
@@ -31,11 +31,14 @@ Strawhats proposes an easy to use, extendable, and reliable solution using an ad
 4. As a user, I should be able to move classes freely to different times and be assured that there are no clashes between students.
 5. As a user, I should be able to export the created timetable to an Excel or .cal file for easy use.
 
-## Documentation (user stories, architecture, test cases, other docs from Confluence – exported as PDF) STILL NEEDS TO BE DONE for ibrahim
+## Documentation
 
-put list of all documents here
+- [Requirements](docs/requirements.pdf)
+- [User Stories](docs/user_stories.pdf)
+- [Architecture](docs/architecture.pdf)
+- [Testing](docs/testing.pdf)
 
-## System requirements (tools/database and their versions)
+## System Requirements (Tools/Database and their Versions)
 
 NPM node package manager
 PLEASE SOMEONE CHECK THIS BECAUSE I AM NOT SURE
@@ -195,4 +198,4 @@ NOTE: Make sure URL is 127.0.0.1 for backend-frontend sync
 - Fixed bug where the calendar was not displaying correct data when moved/resized
 - Fixed bug where the calendar displayed days of the week correctly
 
-## Traceability matrix ADD LINK TO FILE
+## Traceability Matrix ADD LINK TO FILE
