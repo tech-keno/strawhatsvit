@@ -94,7 +94,7 @@ export default function Calendar({data}: CalendarProps) {
     // retreiving information from backend to use as options in dropdown menus
     const [courses, setCourses] = useState<{name: string, id: string}[]>();
     useEffect(() => {
-        fetch('http://127.0.0.1:5000/documents/courses')
+        fetch('https://strawhatsvit-3.onrender.com/documents/courses')
             .then(response => response.json())
             .then(data => setCourses(data.map((e: any) => ({name: e.courseName, id: e.courseName}))))
             .catch(error => console.error('Error fetching data:', error));
@@ -102,7 +102,7 @@ export default function Calendar({data}: CalendarProps) {
 
     const [units, setUnits] = useState<{name: string, id: string}[]>();
     useEffect(() => {
-        fetch('http://127.0.0.1:5000/documents/units')
+        fetch('https://strawhatsvit-3.onrender.com/documents/units')
             .then(response => response.json())
             .then(data => setUnits(data.map((e: any) => ({name: e.unitName, id: e.unitName}))))
             .catch(error => console.error('Error fetching data:', error));
@@ -110,7 +110,7 @@ export default function Calendar({data}: CalendarProps) {
 
     const [classRooms, setClassRooms] = useState<{name: string, id: string}[]>();
     useEffect(() => {
-        fetch('http://127.0.0.1:5000/documents/building')
+        fetch('https://strawhatsvit-3.onrender.com/documents/building')
             .then(response => response.json())
             .then(data => setClassRooms(data.flatMap((e: any) => e.rooms).map((e: string) => ({name: e, id: e}))))
             .catch(error => console.error('Error fetching data:', error));
@@ -118,7 +118,7 @@ export default function Calendar({data}: CalendarProps) {
 
     const [lecturers, setLecturers] = useState<{name: string, id: string}[]>();
     useEffect(() => {
-        fetch('http://127.0.0.1:5000/documents/staff')
+        fetch('https://strawhatsvit-3.onrender.com/documents/staff')
             .then(response => response.json())
             .then(data => setLecturers(data.map((e: any) => ({name: e.name, id: e.name}))))
             .catch(error => console.error('Error fetching data:', error));

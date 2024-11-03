@@ -31,7 +31,7 @@ async function checkAuth(request: NextRequest): Promise<boolean> {
     const cookie = request.headers.get('cookie') || '';
 
     try {
-        const response = await axios.get('http://127.0.0.1:5000/check-auth', { headers: { Cookie: cookie } });
+        const response = await axios.get('https://strawhatsvit-3.onrender.com/check-auth', { headers: { Cookie: cookie } });
 
         if (response.status >= 200 && response.status < 300) {
             console.log("Authenticated");

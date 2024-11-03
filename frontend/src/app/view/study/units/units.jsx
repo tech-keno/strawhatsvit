@@ -8,7 +8,7 @@ export default function Units() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5000/documents/units')
+        fetch('https://strawhatsvit-3.onrender.com/documents/units')
             .then(response => response.json())
             .then(data => {
                 setGridRows(data);
@@ -40,7 +40,7 @@ export default function Units() {
     
     const deleteRow = (rowId) => {
         console.log(rowId)
-        fetch(`http://127.0.0.1:5000/document/units/${rowId}`, {
+        fetch(`https://strawhatsvit-3.onrender.com/document/units/${rowId}`, {
             method: 'DELETE',
         })
         .then(response => {
@@ -56,7 +56,7 @@ export default function Units() {
     };
 
     const saveData = () => {
-        fetch('http://127.0.0.1:5000/document/units', {
+        fetch('https://strawhatsvit-3.onrender.com/document/units', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ export default function Units() {
             if (data.message) {
                 alert('Data saved successfully!');
                 // Optionally refresh data
-                fetch('http://127.0.0.1:5000/documents/units')
+                fetch('https://strawhatsvit-3.onrender.com/documents/units')
                     .then(response => response.json())
                     .then(data => setGridRows(data));
             } else {
