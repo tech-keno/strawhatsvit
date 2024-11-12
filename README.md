@@ -18,6 +18,16 @@ Strawhats proposes an easy to use, extendable, and reliable solution using an ad
 
 ## Demo [(link to hosted project)](https://strawhatsvit-william.vercel.app/login)
 
+### Login Credentials
+
+To log in, try one of the following:
+
+- **User**: `w`  
+  **Password**: `w`
+
+- **User**: `sam`  
+  **Password**: `sam`
+
 ## Features
 
 **Sprint 3**
